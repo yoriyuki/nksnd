@@ -31,16 +31,16 @@ class GenMaxEntModel:
         self.__m.load(name)
 
     def eval(self, context, outcome):
-        self.__m.eval(context, outcome)
+        return self.__m.eval(context, outcome)
 
     def eval_all(self, context):
-        self.__m.eval_all(context)
+        return self.__m.eval_all(context)
 
 def _test():
     model = GenMaxEntModel()
     model.train([(['1', '2'], '3'), (['1', '3'], '4')])
-    print model.eval(['1', '2'], '3')
-    print model.eval(['1', '2'], '4')
+    print(model.eval(['1', '2'], '3'))
+    print(model.eval(['1', '2'], '4'))
 
 if __name__ == "__main__":
     _test()
