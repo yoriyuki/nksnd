@@ -1,7 +1,13 @@
+#TODO uknown word!
 def collation_score(lm, morphs):
     p = 1.0
     for i in range(len(morphs)):
-        p = p * lm.eval(morphs[0:i-1], morphs[i])
+        p1 = lm.eval(morphs[0:i-1], morphs[i])
+        if p1 == 0:
+            p = p * 0.01
+        else:
+            p = p * p1
+
     return p
 
 def collation_sort(lm, morphs_list):
