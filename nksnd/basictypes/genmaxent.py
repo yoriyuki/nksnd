@@ -17,7 +17,7 @@ class GenMaxEntModel:
         self.__m.add_event(context, outcome)
 
     def __train(self):
-        self.__m.train()
+        self.__m.train(30, "lbfgs", 2)
 
     def train(self, events):
         self.__begin_add_event()
