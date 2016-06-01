@@ -5,7 +5,7 @@ class CollationLM:
         self._model = genmaxent.GenMaxEntModel()
 
     def train(self, data):
-        self._model.train(data, cutoff=5, sigma=2.0)
+        self._model.train(data, cutoff=1)
 
     def eval(self, context, outcome):
         return self._model.eval(context, outcome)

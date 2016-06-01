@@ -4,7 +4,7 @@ def collation_score(lm, morphs):
     for i in range(len(morphs)):
         p1 = lm.eval(morphs[0:i-1], morphs[i])
         if p1 == 0:
-            p = p * 0.01
+            p = p * 1e-10
         else:
             p = p * p1
 

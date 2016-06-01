@@ -1,5 +1,7 @@
 from maxent import MaxentModel
-maxent.set_verbose(1)
+from maxent import set_verbose
+
+set_verbose(1)
 
 def get_features(context):
     return map(lambda data: data.key(), context)
@@ -17,17 +19,17 @@ class GenMaxEntModel:
     def __add_event(self, context, outcome):
         self.__m.add_event(context, outcome)
 
-    def __train(self, iter, sigma):
-        self.__m.train(iter, sigma)
+    def __train(self):
+        self.__m.train(5, "lbfgs", 2)
 
-    def train(self, events, iter=15, sigma=0.0, cutoff=1):
+    def train(self, events, cutoff=1):
         self.__begin_add_event()
         for event in events:
             context, outcome = event
             features = get_features(context)
             self.__add_event(features, outcome.key())
         self.__end_add_event(cutoff)
-        self.__train(iter, sigma)
+        self.__train()
 
     def save(self, name):
         self.__m.save(name)
