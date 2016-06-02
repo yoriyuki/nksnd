@@ -3,12 +3,7 @@ from basictypes import concat_files
 from basictypes import morph
 import argparse
 import os
-
-def gen_data(lines):
-    for line in lines:
-        words = line.split()
-        for i in range(len(words)):
-            yield (map(morph.Morph, words[0:i-1]), morph.Morph(words[i]))
+import cPickle
 
 if __name__ == "__main__":
 
@@ -25,9 +20,13 @@ if __name__ == "__main__":
 
     files = map(open, inputs)
     lines = concat_files.concat(files)
+    word_lists = map(lambda line: line.split(), lines)
+    sentences = map(morph.Morph, word_lists)
 
     model = collation_lm.CollationLM()
-    model.train(gen_data(lines))
-    model.save(output_file)
+    model.train(sentences)
 
     map(lambda f: f.close(), files)
+
+    with open(output_file) as f:
+        cPickle.dump(model, output_file, 2) 

@@ -1,1 +1,1 @@
-__all__=["concat_files", "morph", "dict"]
+__all__=["concat_files", "morph"]
