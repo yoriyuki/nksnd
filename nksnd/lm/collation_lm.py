@@ -59,5 +59,8 @@ class CollationLM:
             self._model.sparsify()
 
     def eval(self, context, outcome):
-        return self._model.score(map(self._feature_id, context),
-                                self._outcome_id(outcome))
+        x = lil_matrix(1, self._feature_num()))
+        for feature_id in map(self._feature_id, context):
+            x[1, feature_id] = 1.0
+        y = [self._outcome_id(outcome)]
+        return self._model.score(x, y)
