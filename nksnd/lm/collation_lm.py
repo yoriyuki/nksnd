@@ -53,7 +53,10 @@ class CollationLM:
                 x[i, feature_id] = 1.0
         print "training..."
         self._model.fit(x, y)
-        print "Sparcity:", (self._model.coef_ == 0).sum() / self._feature_num()
+        sparcity = (self._model.coef_ == 0).sum() / float(self._model.coef_.size)
+        print "Sparcity:", sparcity
+        if sparcity >= 0.5:
+            self._model.sparsify()
 
     def eval(self, context, outcome):
         return self._model.score(map(self._feature_id, context),
