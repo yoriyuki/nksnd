@@ -13,8 +13,8 @@ def _id(dict, elem):
 
 
 class CollationLM:
-    def __init__(self):
-        self._model = LogisticRegression(penalty='l1', verbose=1)
+    def __init__(self, penalty='l2', solver='lbfgs', max_iter=10):
+        self._model = LogisticRegression(penalty=penalty, solver=solver, verbose=1, max_iter=max_iter)
         self._features = {'num':0, 'map':{}}
         self._outcomes = {'num':0, 'map':{}}
 
@@ -54,7 +54,6 @@ class CollationLM:
         print "training..."
         self._model.fit(x, y)
         print "Sparcity:", (self._model.coef_ == 0).sum() / self._feature_num()
-        self._model.sparsify()
 
     def eval(self, context, outcome):
         return self._model.score(map(self._feature_id, context),
