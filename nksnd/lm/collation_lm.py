@@ -14,7 +14,7 @@ def _id(dict, elem):
 
 class CollationLM:
     def __init__(self):
-        self._model = LogisticRegression(penalty='l1')
+        self._model = LogisticRegression(penalty='l1', verbose=1)
         self._features = {'num':0, 'map':{}}
         self._outcomes = {'num':0, 'map':{}}
 
@@ -41,10 +41,11 @@ class CollationLM:
     def train(self, sentences):
         print "building samples..."
         samples = self._samples(sentences)
+        print len(samples), "samples", self._feature_num(), "features"
+        print "building the matrix..."
         x = lil_matrix((len(samples), self._feature_num()))
         y = []
         col = 0
-        print "building the matrix..."
         for i in range(len(samples)):
             feature_ids, outcome_id = samples[i]
             y.append(outcome_id)
@@ -52,6 +53,7 @@ class CollationLM:
                 x[i, feature_id] = 1.0
         print "training..."
         self._model.fit(x, y)
+        print "Sparcity:", (self._model.coef_ == 0).sum() / self._feature_num()
         self._model.sparsify()
 
     def eval(self, context, outcome):
