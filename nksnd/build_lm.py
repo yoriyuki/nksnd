@@ -21,7 +21,7 @@ if __name__ == "__main__":
     files = map(open, inputs)
     lines = concat_files.concat(files)
     word_lists = map(lambda line: line.split(), lines)
-    sentences = map(morph.Morph, word_lists)
+    sentences = map(lambda word_list: map(morph.Morph, word_list), word_lists)
 
     model = collation_lm.CollationLM()
     model.train(sentences)
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     map(lambda f: f.close(), files)
 
     with open(output_file) as f:
-        cPickle.dump(model, output_file, 2) 
+        cPickle.dump(model, output_file, 2)

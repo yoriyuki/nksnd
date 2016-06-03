@@ -1,4 +1,4 @@
-from skearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression
 from scipy.sparse import lil_matrix
 from numpy import array
 
@@ -6,16 +6,17 @@ def _id(dict, elem):
     if elem.key() in dict['map']:
         return dict['map'][elem.key()]
     else:
-        dict['num'] = dict['num'] + 1
-        dict['map'][elem.key()] = dict['num']
-        return dict['num']
+        num = dict['num']
+        dict['map'][elem.key()] = num
+        dict['num'] = num + 1
+        return num
 
 
 class CollationLM:
     def __init__(self):
         self._model = LogisticRegression(penalty='l1')
-        self._features = {'num':0, {}}
-        self._outcomes = {'num':0, {}}
+        self._features = {'num':0, 'map':{}}
+        self._outcomes = {'num':0, 'map':{}}
 
     def _feature_id(self, feature):
         return _id(self._features, feature)
@@ -24,30 +25,32 @@ class CollationLM:
         return self._features['num']
 
     def _outcome_id(self, outcome):
-        return _id(self.outcomes, outcome)
+        return _id(self._outcomes, outcome)
 
     def _outcome_num(self):
         return self._outcomes['num']
 
-    def _samples(sentences):
+    def _samples(self, sentences):
         samples=[]
-        for sentence in lines:
-            mrphs = line.split()
-            for i in range(len(mrphs)):
-                samples.append((map(self._feature_id, mrphs[0:i-1]),
-                                map(self._outcome_id, mrphs[i])))
+        for sentence in sentences:
+            for i in range(len(sentence)):
+                samples.append((map(self._feature_id, sentence[0:i-1]),
+                                self._outcome_id(sentence[i])))
         return samples
 
     def train(self, sentences):
-        samples = _samples(sentences)
-        x = lil_matrix((self._feature_num, len(samples)))
+        print "building samples..."
+        samples = self._samples(sentences)
+        x = lil_matrix((len(samples), self._feature_num()))
         y = []
         col = 0
-        for i in len(samples):
-            features, outcome = samples[i]
-            y.append(outcome)
+        print "building the matrix..."
+        for i in range(len(samples)):
+            feature_ids, outcome_id = samples[i]
+            y.append(outcome_id)
             for feature_id in feature_ids:
-                x[i][feature_id]=1
+                x[i, feature_id] = 1.0
+        print "training..."
         self._model.fit(x, y)
         self._model.sparsify()
 
