@@ -23,7 +23,7 @@ def _hashed_samples(samples):
     for features, outcome in samples:
         yield (map(_hash, features), _hash(outcome))
 
-def _decompose_dict(dict):
+def _decompose_features(count):
     keys=[]
     vals=[]
     for key, val in dict:
@@ -41,7 +41,6 @@ class CollationLM:
     def __init__(self, penalty='l2', solver='lbfgs', max_iter=10, n_features=1000, n_outcomes=1000, feature_num=1000, outcome_num=1000):
         self._model = LogisticRegression(penalty=penalty, solver=solver, verbose=1, max_iter=max_iter)
         self._decomp_features = TruncatedSVD(n_components=feature_num)
-        self._decomp_outcomes =         AgglomerativeClustering(n_cluster=outcome_num)
         self._n_features = n_features
         self._n_outcomes = n_outcomes
         self._feature_num = feature_num
@@ -62,19 +61,27 @@ class CollationLM:
         print len(hashed_samples), "samples"
         print "building the matrix..."
         raw_x = lil_matrix((len(hashed_samples), _hash_num))
-        y_with_features = {}
+        y_with_features = []
+        y_count = {}
         for i in range(len(samples)):
             feature_ids, outcome_id = hashed_samples[i]
             for feature_id in feature_ids:
                 raw_x[i, abs(feature_id)] += sign(feature_id)
             if outcome_id in y:
                 y_with_features[outcome_id]+=raw_x[i]
+                y_count[outcome_id] += 1
             else:
                 y_with_features[oucome_id]=raw_x[i]
-        print "decomposing and clustering..."
+                y_count[outcome_id] = 1
+        print "compressing features..."
         x = self._decomp_features.fit_transfrom(raw_x)
-        outcome_ids, feature_vec = _decompose_dict(y_with_features)
-        cluster_ids = self._decomp_outcomes.fit_transform(feature_vec)
+        print "clustering outcomes..."
+        decomp_outcomes = AgglomerativeClustering(n_cluster=outcome_num)
+        outcome_ids, count_vecs = _decompse_dict(y_with_features)
+        feature_vecs=[]
+        for i in range(len(outcome_ids)):
+            feature_vecs[i] = count_vecs / y_count[outcome_ids[i]]
+        cluster_ids = decomp_outcomes.fit_transform(feature_vecs)
         self._clustering_outcome_dict = _merge(outcome_ids, cluster_ids)
         print "training..."
         self._model.fit(x, map(self._cluster_outcome, outcome_ids))
