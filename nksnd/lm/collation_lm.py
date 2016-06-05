@@ -1,56 +1,59 @@
 from sklearn.linear_model import LogisticRegression
 from scipy.sparse import lil_matrix
 from numpy import array
+from sklearn.decomposition import TruncatedSVD
+import mmh3
 
-def _id(dict, elem):
-    if elem.key() in dict['map']:
-        return dict['map'][elem.key()]
-    else:
-        num = dict['num']
-        dict['map'][elem.key()] = num
-        dict['num'] = num + 1
-        return num
+def _samples(sentences):
+    for sentence in sentences:
+        for i in range(len(sentence)):
+            features = set(map(lambda m: m.key(), sentences[0:i-1]))
+            yield (features, sentence[i].key())
 
+def _hash_num = 2**21
+
+def _sign(n) = n / abs(n)
+
+def _hash(s):
+    h = mmh3.hash(s)
+    return _sign(h) * (abs(h) % _hash_num)
+
+def _hashed_samples(samples):
+    for features, outcome in samples:
+        yield (map(_hash, features), _hash(outcome))
 
 class CollationLM:
-    def __init__(self, penalty='l2', solver='lbfgs', max_iter=10):
+    def __init__(self, penalty='l2', solver='lbfgs', max_iter=10, n_features=1000, n_outcomes=1000, feature_num=1000, outcome_num=1000):
         self._model = LogisticRegression(penalty=penalty, solver=solver, verbose=1, max_iter=max_iter)
-        self._features = {'num':0, 'map':{}}
-        self._outcomes = {'num':0, 'map':{}}
+        self._decomp_features = TruncatedSVD(n_components=feature_num)
+        self._decomp_outcomes = TruncatedSVD(n_components=outcome_num)
+        self._n_features = n_features
+        self._n_outcomes = n_outcomes
+        self._feature_num = feature_num
+        self._outcome_num = outcome_num
 
-    def _feature_id(self, feature):
-        return _id(self._features, feature)
+    def feature_num(self):
+        return self._feature_num
 
-    def _feature_num(self):
-        return self._features['num']
-
-    def _outcome_id(self, outcome):
-        return _id(self._outcomes, outcome)
-
-    def _outcome_num(self):
-        return self._outcomes['num']
-
-    def _samples(self, sentences):
-        samples=[]
-        for sentence in sentences:
-            for i in range(len(sentence)):
-                samples.append((map(self._feature_id, sentence[0:i-1]),
-                                self._outcome_id(sentence[i])))
-        return samples
+    def outcome_num(self):
+        return self._outcome_num
 
     def train(self, sentences):
         print "building samples..."
-        samples = self._samples(sentences)
-        print len(samples), "samples", self._feature_num(), "features"
+        hashed_samples = list(_hashed_sample(_samples(sentences)))
+        print len(hashed_samples), "samples"
         print "building the matrix..."
-        x = lil_matrix((len(samples), self._feature_num()))
-        y = []
-        col = 0
+        raw_x = lil_matrix((len(hashed_samples), _hash_num))
+        raw_y_matrix = lil_matrix((len(hashed_samples), _hash_num))
         for i in range(len(samples)):
-            feature_ids, outcome_id = samples[i]
-            y.append(outcome_id)
+            feature_ids, outcome_id = hashed_samples[i]
+            raw_y_matrix[i, abs(outcome_id)] += sign(outcome_id)
             for feature_id in feature_ids:
-                x[i, feature_id] = 1.0
+                raw_x[i, abs(feature_id)] += sign(feature_id)
+        print "decomposing..."
+        x = self._decomp_features.fit_transfrom(raw_x)
+        y_matrix = self._decomp_outcomes.fit_transform(raw_y_marix)
+
         print "training..."
         self._model.fit(x, y)
         sparcity = (self._model.coef_ == 0).sum() / float(self._model.coef_.size)
