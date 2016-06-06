@@ -23,10 +23,10 @@ def _hashed_samples(samples):
     for features, outcome in samples:
         yield (map(_hash, features), _hash(outcome))
 
-def _decompose_features(count):
+def _decompose_features(d):
     keys=[]
     vals=[]
-    for key, val in dict:
+    for key, val in d:
         keys.append(key)
         vals.append(val)
     return (keys, vals)
@@ -47,7 +47,7 @@ class CollationLM:
         self._outcome_num = outcome_num
 
     def _cluster_outcome(self, outcome):
-        return self._clustering_outcome_dict[outcome]
+        return self._outcome_cluster_ids[outcome]
 
     def feature_num(self):
         return self._feature_num
@@ -59,30 +59,40 @@ class CollationLM:
         print "building samples..."
         hashed_samples = list(_hashed_sample(_samples(sentences)))
         print len(hashed_samples), "samples"
-        print "building the matrix..."
+
+        print "building the feature matrix..."
         raw_x = lil_matrix((len(hashed_samples), _hash_num))
-        y_with_features = []
+        outcome_ids = []
+        for i in range(len(samples)):
+            feature_ids, outcome_id = hashed_samples[i]
+            outcome_ids.append(outcome_id)
+            for feature_id in feature_ids:
+                raw_x[i, abs(feature_id)] += sign(feature_id)
+
+        print "compressing features..."
+        x = self._decomp_features.fit_transfrom(raw_x)
+
+        print("building the outcome matrix")
+        y_feature_sums = lil_matrix((self._n_outcomes, self.feature_num()))
         y_count = {}
         for i in range(len(samples)):
             feature_ids, outcome_id = hashed_samples[i]
-            for feature_id in feature_ids:
-                raw_x[i, abs(feature_id)] += sign(feature_id)
             if outcome_id in y:
-                y_with_features[outcome_id]+=raw_x[i]
+                for j, v in x.getrowview(i)
+                y_feature_sums[outcome_id, j] += v
                 y_count[outcome_id] += 1
             else:
-                y_with_features[oucome_id]=raw_x[i]
+                y_feature_sums[oucome_id, j] = v
                 y_count[outcome_id] = 1
-        print "compressing features..."
-        x = self._decomp_features.fit_transfrom(raw_x)
+        y_features = lil_matrix((self._n_outcomes, self.feature_num()))
+        for outcome_id, count in y_count:
+            for j, v in y_feature_sums.getrowview(outcome_id):
+                y_features[outcome_id, j] = v / count
+
         print "clustering outcomes..."
         decomp_outcomes = AgglomerativeClustering(n_cluster=outcome_num)
-        outcome_ids, count_vecs = _decompse_dict(y_with_features)
-        feature_vecs=[]
-        for i in range(len(outcome_ids)):
-            feature_vecs[i] = count_vecs / y_count[outcome_ids[i]]
-        cluster_ids = decomp_outcomes.fit_transform(feature_vecs)
-        self._clustering_outcome_dict = _merge(outcome_ids, cluster_ids)
+        cluster_ids = decomp_outcomes.fit_transform(y_features)
+        self.outcome_cluster_ids = cluster_ids
         print "training..."
         self._model.fit(x, map(self._cluster_outcome, outcome_ids))
         sparcity = (self._model.coef_ == 0).sum() / float(self._model.coef_.size)
