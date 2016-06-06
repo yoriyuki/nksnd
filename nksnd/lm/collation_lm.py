@@ -54,7 +54,7 @@ class CollationLM:
         self._outcome_num = outcome_num
 
     def _cluster_outcome(self, outcome):
-        return self._outcome_cluster_ids[self._inverse_y[outcome]]
+        return self._cluster_ids[self._inverse_y[outcome]]
 
     def feature_num(self):
         return self._feature_num
@@ -79,7 +79,7 @@ class CollationLM:
         print "compressing features..."
         x = self._decomp_features.fit_transform(raw_x)
 
-        print("building the outcome matrix")
+        print("building the outcome matrix...")
         y_feature_sums = lil_matrix((self._n_outcomes, self.feature_num()))
         y_count = {}
         for i in range(len(hashed_samples)):
@@ -91,8 +91,8 @@ class CollationLM:
                 y_count[outcome_id] = 1
                 y_feature_sums[outcome_id] = x[i]
         y = y_count.keys()
-        y_features = array([y_feature_sums[i] / y_count[i] for i in y])
-        
+        y_features = [y_feature_sums[i].toarray()[0] / float(y_count[i]) for i in y]
+
         print "clustering outcomes..."
         decomp_outcomes = AgglomerativeClustering(n_clusters=self._outcome_num)
         cluster_ids = decomp_outcomes.fit_predict(y_features)
