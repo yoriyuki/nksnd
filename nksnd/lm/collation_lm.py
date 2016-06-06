@@ -11,7 +11,7 @@ def _samples(sentences):
             features = set(map(lambda m: m.key(), sentence[0:i-1]))
             yield (features, sentence[i].key())
 
-_hash_num = 2**21
+_hash_num = 2**20
 
 def _sign(n):
     return n / abs(n)
