@@ -91,10 +91,8 @@ class CollationLM:
                 y_count[outcome_id] = 1
                 y_feature_sums[outcome_id] = x[i]
         y = y_count.keys()
-        y_features = zeros((len(y), self.feature_num()))
-        for i in range(len(y)):
-            y_features[i] = y_feature_sums[y[i]] / y_count[y[i]]
-
+        y_features = array([y_feature_sums[i] / y_count[i] for i in y])
+        
         print "clustering outcomes..."
         decomp_outcomes = AgglomerativeClustering(n_clusters=self._outcome_num)
         cluster_ids = decomp_outcomes.fit_predict(y_features)
