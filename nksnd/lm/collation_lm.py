@@ -20,9 +20,15 @@ def _hash(s):
     h = mmh3.hash(s)
     return _sign(h) * (abs(h) % _hash_num)
 
+def _feature_vec(features):
+    return map(_hash, features)
+
+def _outcome_id(outcome):
+    return abs(_hash(outcome))
+
 def _hashed_samples(samples):
     for features, outcome in samples:
-        yield (map(_hash, features), abs(_hash(outcome)))
+        yield (_feature_vec(features), _outcomd_id(outcome))
 
 def _inverse(x):
     y = {}
@@ -80,7 +86,7 @@ class CollationLM:
         y_features = [y_feature_sums[i].toarray()[0] / float(y_count[i]) for i in y]
 
         print "clustering outcomes..."
-        decomp_outcomes = AgglomerativeClustering(n_clusters=self._outcome_num)
+        decomp_outcomes = AgglomerativeClustering(n_clusters=self.outcome_num())
         cluster_ids = decomp_outcomes.fit_predict(y_features)
         self._cluster_ids = cluster_ids
         self._inverse_y = _inverse(y)
@@ -92,8 +98,9 @@ class CollationLM:
             self._model.sparsify()
 
     def eval(self, context, outcome):
-        x = lil_matrix(1, self._feature_num())
-        for feature_id in map(self._feature_id, context):
-            x[1, feature_id] = 1.0
-        y = [self._outcome_id(outcome)]
+        raw_x = lil_matrix(1, self._feature_num())
+        for feature_num in _feature_vec(context):
+            x[1, abs(feature_num)] += _sign(feature_num)
+        x = self._decomp_features.transform(raw_x)
+        y = [self._cluster_outcome(_outcome_id(outcome))]
         return self._model.score(x, y)
