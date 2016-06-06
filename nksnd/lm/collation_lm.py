@@ -24,20 +24,6 @@ def _hashed_samples(samples):
     for features, outcome in samples:
         yield (map(_hash, features), abs(_hash(outcome)))
 
-def _decompose_features(d):
-    keys=[]
-    vals=[]
-    for key, val in d:
-        keys.append(key)
-        vals.append(val)
-    return (keys, vals)
-
-def _merge(it1, it2):
-    d = {}
-    for x in it1:
-        d[x] = it2.next()
-    return d
-
 def _inverse(x):
     y = {}
     for i in range(len(x)):
