@@ -1,1 +1,1 @@
-__all__=["col_lm"]
+__all__=["collation_lm"]
