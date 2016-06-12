@@ -16,8 +16,5 @@ def count_words(sentences):
 def cut_off_set(counts, cut_off=1):
     return { x for x in counts.keys() if counts[x] > cut_off }
 
-def filter_list(cut_off_set, xs):
-    return [ x for x in xs if x in cut_off_set ]
-
 def reverse_map(dict):
     return { v: k for (k ,v) in dict.items()}

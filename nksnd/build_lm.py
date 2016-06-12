@@ -1,5 +1,5 @@
 from lm import collation_lm
-from basictypes import concat_files
+from basictypes import utils
 from basictypes import morph
 import argparse
 import os
