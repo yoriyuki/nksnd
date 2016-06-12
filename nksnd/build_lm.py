@@ -30,7 +30,7 @@ if __name__ == "__main__":
     outcome_num = args.clusternum
 
     files = map(open, inputs)
-    lines = concat_files.concat(files)
+    lines = utiles.concat(files)
     word_lists = map(lambda line: line.split(), lines)
     sentences = map(lambda word_list: map(morph.Morph, word_list), word_lists)
 
