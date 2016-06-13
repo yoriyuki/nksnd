@@ -18,3 +18,19 @@ def cut_off_set(counts, cut_off=1):
 
 def reverse_map(dict):
     return { v: k for (k ,v) in dict.items()}
+
+def is_hiragana(string):
+    for c in string:
+        if "ぁ" <= ch <= "ん":
+            continue
+        else:
+            return False
+    return True
+
+def is_katakana(string):
+    for c in string:
+        if "ァ" <= ch <= "ン":
+            continue
+        else:
+            return False
+    return True
