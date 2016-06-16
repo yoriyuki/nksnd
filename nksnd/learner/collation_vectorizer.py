@@ -1,6 +1,7 @@
-from ..basictypes import utils
-from ..basictypes import utils
-from ..basictypes import morph
+from ..basictypes import utils, morph
+from sklearn.decomposition import TruncatedSVD
+from sklearn.cluster import AgglomerativeClustering
+from scipy.sparse import csr_matrix, dok_matrix, linalg, diag
 
 def _morph_from_word(word, cut_off_set):
     if word in cut_off_set:
@@ -23,11 +24,13 @@ def _collation_samples(mrphs_list):
             yield (features, mrphs[i].key())
 
 class CollationVectorizer():
-    def __init__(self):
+    def __init__(self, feature_dim, outcome_cluster_num):
         self._feature_num = 0
         self._feature_id_map = {}
         self._outcome_num = 0
         self._outcome_id_map = {}
+        self._feature_dim = feature_dim
+        self._outcome_cluster_num = outcome_cluster_num
 
     def _feature_id(self, feature):
         if feature.key() in self._feature_id_map:
@@ -47,9 +50,9 @@ class CollationVectorizer():
 
     def _numbered(self, samples):
         for features, outcome in samples:
-            yield [self._feature_id(f) for f in features],     self._outcome_id(outcome)
+            yield [self._feature_id(f) for f in features],     self._outcome_id[outcome]
 
-    def fit-transform(self, file_names):
+    def fit_transform(self, file_names):
         files = [open(fname) for fname in file_names]
         lines = utils.concat(files)
         sentences = (line.split() for line in lines)
@@ -58,14 +61,39 @@ class CollationVectorizer():
         samples = _collation_samples(mrphs_list)
         numbered_samples = self._numbered(samples)
 
+        indicies=[]
+        data=[]
+        indptr=[]
         for features, outcome in numbered_samples:
-     for term in d:
-         index = vocabulary.setdefault(term, len(vocabulary))
-         indices.append(index)
-         data.append(1)
-     indptr.append(len(indices))
-     csr_matrix((data, indices, indptr), dtype=int).toarray()
+            for f in features:
+                indices.append(f)
+                data.append(1)
+            indptr.append(len(indices))
+            outcomes.append(outcome)
+        x_raw = csr_matrix((data, indices, indptr), dtype=int)
 
+        #compressing features
+        svd = TruncatedSVD(n_components=self._feature_dim)
+        x = svd.fit_transform(x_raw)
+
+        #clustering outcomes
+        y_raw = dok_matrix((len(outcomes), self._outcome_num), dtype=int)
+        for i in range(len(outcomes)):
+            y_raw[outcomes[i], i] = 1
+        inverse_count = linalg.inv(diags(y_raw.sum(1)))
+        cl = AgglomerativeClustering(n_clusters=self._outcome_cluster_num)
+        self._outcome_clusters = cl.fit_predict(inverse_count.dot(y_raw.dot(x)))
         map(lambda f: f.close(), files)
+        return x
 
     def transform(self, file_names):
+        files = [open(fname) for fname in file_names]
+        lines = utils.concat(files)
+        sentences = (line.split() for line in lines)
+        mrphs_list = _corpus_tokenier(sentences, self._cut_off_set)
+        samples = _collation_samples(mrphs_list)
+        numbered_samples = self._numbered(samples)
+
+
+    def outcome_cluster(self, outcome):
+        return self._outcome_cluster[self._outcome_id[outcome]]
