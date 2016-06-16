@@ -73,19 +73,22 @@ class CollationVectorizer():
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
 
         #compressing features
-        svd = TruncatedSVD(n_components=self._feature_dim)
-        x = svd.fit_transform(x_raw)
+        self._svd = TruncatedSVD(n_components=self._feature_dim)
+        x = self._svd.fit_transform(x_raw)
 
         #clustering outcomes
         y_raw = dok_matrix((len(outcomes), self._outcome_num), dtype=int)
         for i in range(len(outcomes)):
             y_raw[outcomes[i], i] = 1
         inverse_count = linalg.inv(diags(y_raw.sum(1)))
-        cl = AgglomerativeClustering(n_clusters=self._outcome_cluster_num)
-        self._outcome_clusters = cl.fit_predict(inverse_count.dot(y_raw.dot(x)))
+        self._cl = AgglomerativeClustering(n_clusters=self._outcome_cluster_num)
+        self._outcome_clusters =
+            self._cl.fit_predict(inverse_count.dot(y_raw.dot(x)))
         map(lambda f: f.close(), files)
         return x
 
+    # Do funny things when file_names contain words
+    # which are not contained in files given to fit.
     def transform(self, file_names):
         files = [open(fname) for fname in file_names]
         lines = utils.concat(files)
@@ -93,7 +96,17 @@ class CollationVectorizer():
         mrphs_list = _corpus_tokenier(sentences, self._cut_off_set)
         samples = _collation_samples(mrphs_list)
         numbered_samples = self._numbered(samples)
-
+        indicies=[]
+        data=[]
+        indptr=[]
+        for features, outcome in numbered_samples:
+            for f in features:
+                indices.append(f)
+                data.append(1)
+            indptr.append(len(indices))
+        x_raw = csr_matrix((data, indices, indptr), dtype=int)
+        x = self._svd.transform(x_raw)
+        return x
 
     def outcome_cluster(self, outcome):
         return self._outcome_cluster[self._outcome_id[outcome]]
