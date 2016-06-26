@@ -3,19 +3,13 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.cluster import AgglomerativeClustering
 from scipy.sparse import csr_matrix, dok_matrix, linalg, diag
 
-def _morph_from_word(word, cut_off_set):
-    if word in cut_off_set:
-        morph.Morph(word)
-    else:
-        morph.UnknownMorph(word)
-
 def _cut_off_set(sentences):
     counts = count_words(sentences)
     cut_off_set = utils.cut_off_set(counts, cut_off=1)
 
-def _corpus_tokenizer(sentences, cut_off_set):
+def _corpus_tokenizer(sentences):
     for sentence in sentences:
-        yield [_morph_from_word(word, cut_off_set) for word in sentence]
+        yield [morph.Morph(word) for word in sentence]
 
 def _collation_samples(mrphs_list):
     for mrphs in mrphs_list:
