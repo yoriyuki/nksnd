@@ -1,5 +1,7 @@
 import utils
 
+max_unkown_id = 21
+
 class Morph:
     def __init__(self, surface):
         self._surface = surface
@@ -12,13 +14,18 @@ class Morph:
         if len(surface) <= 6:
             self._len = len(surface)
         else:
-            self._len = '*'
+            self._len = 7
 
     def surface(self):
         return self._surface
 
     def key(self):
-        return ':' + self._surface
+        return self._surface
 
     def unknown_key(self):
-        return '_' + self_len + self._kind
+        if self._kind = 'hiragana':
+            return self._len
+        else if self._kind = 'katakana':
+            return 7 + self._len
+        else:
+            return 14 + self._len

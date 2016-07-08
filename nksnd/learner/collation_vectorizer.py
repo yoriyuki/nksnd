@@ -19,28 +19,20 @@ def _collation_samples(mrphs_list):
 
 class CollationVectorizer():
     def __init__(self, feature_dim, outcome_cluster_num):
-        self._feature_num = 0
-        self._feature_id_map = {}
-        self._outcome_num = 0
-        self._outcome_id_map = {}
-        self._feature_dim = feature_dim
-        self._outcome_cluster_num = outcome_cluster_num
+        self._word_id = {}
+
+
+    def _mrph_id(self, mrph):
+        if mrph.key() in self._word_id:
+            return morph.max_unkown_id + 1 + self._word_id{mrph.key()}
+        else:
+            return mrph.unknown_key()
 
     def _feature_id(self, feature):
-        if feature.key() in self._feature_id_map:
-            return self._feature_id_map[feature.key()]
-        else:
-            self._feature_num += 1
-            self._feature_id_map[feature.key()] = self._feature_num
-            return self._feature_num
+        return self._mrph_id(feature)
 
-    def _outcome_id(self, feature):
-        if outcome.key() in self._outcome_id_map:
-            return self._outcome_id_map[outcome.key()]
-        else:
-            self._come_num += 1
-            self._outcome_id_map[outcome.key()] = self._outcome_num
-            return self._outcome_num
+    def _outcome_id(self, outcome):
+        return self._mrph_id(outcome)
 
     def _numbered(self, samples):
         for features, outcome in samples:
@@ -50,8 +42,19 @@ class CollationVectorizer():
         files = [open(fname) for fname in file_names]
         lines = utils.concat(files)
         sentences = (line.split() for line in lines)
-        self._cut_off_set = _cut_off_set(sentences)
-        mrphs_list = _corpus_tokenier(sentences, self._cut_off_set)
+
+        word_count = {}
+        for sentence in sentences:
+            for word in sentence:
+                if word in word_count:
+                    word_count += 1
+                else:
+                    word_count = 1
+        word_list = list((w for w, c in word_count.items() if c > 1))
+        for i in range(len(word_list)):
+            self._word_id[word_list[i]] = i
+
+        mrphs_list = _corpus_tokenier(sentences)
         samples = _collation_samples(mrphs_list)
         numbered_samples = self._numbered(samples)
 
