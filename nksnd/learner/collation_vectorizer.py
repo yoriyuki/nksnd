@@ -38,6 +38,9 @@ class CollationVectorizer():
         for features, outcome in samples:
             yield [self._feature_id(f) for f in features],     self._outcome_id(outcome)
 
+    def _outcome_num(self):
+        morph.max_unkown_id + len(self._word_id)
+
     def fit_transform(self, file_names):
         files = [open(fname) for fname in file_names]
         lines = utils.concat(files)
@@ -75,10 +78,11 @@ class CollationVectorizer():
         x = self._svd.fit_transform(x_raw)
 
         #clustering outcomes
-        y_raw = dok_matrix((len(outcomes), self._outcome_num), dtype=int)
-        for i in range(len(outcomes)):
-            y_raw[outcomes[i], i] = 1
-        inverse_count = linalg.inv(diags(y_raw.sum(1)))
+        y = dok_matrix((self.outcome_num(), self._feature_dim))
+        for i in range(self.outcome_num()):
+            y[outcomes[i], i] = 1
+        #FIXME! 1 + ... Hack to avoid div by 0!
+        inverse_count = linalg.inv(diags(1 + y_raw.sum(1)))
         self._cl = AgglomerativeClustering(n_clusters=self._outcome_cluster_num)
         self._outcome_clusters =
             self._cl.fit_predict(inverse_count.dot(y_raw.dot(x)))
@@ -104,10 +108,20 @@ class CollationVectorizer():
         x = self._svd.transform(x_raw)
         return x
 
-    def outcome_cluster(self, outcome):
-        outcome_id = self._outcome_id(outcome)
-        if outcome_id in self._outcome_cluster:
-            return self._outcome_cluster[outcome_id]
-        else:
-            # a word which does not appear in the corpus, even its unknown form, is mapped to 0
-            return self._outcome_cluster[0]
+    def outcome_cluster(self):
+        return dict(map(lambda i: self._outcome_cluster[i], self._word_id))
+
+    def outcome_unknown_cluster(self):
+        return self.outcome_cluster[0:morph.max_unkown_id]
+
+    def feature_vec(self):
+        indicies=[]
+        data=[]
+        indptr=[0]
+        for w in self._word_id.keys():
+            indices.append(self._feature_id(w))
+            data.append(1)
+        indptr.append(len(indices))
+        x_raw = csr_matrix((data, indices, indptr), dtype=int)
+        x = self._svd.transform(x_raw)
+        return dict(map(lambda w: x.getrow(self._feature_id(w)),    self.word_id.keys()))
