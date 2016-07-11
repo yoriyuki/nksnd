@@ -111,7 +111,7 @@ class CollationVectorizer():
     def outcome_cluster(self):
         return dict(map(lambda i: self._outcome_cluster[i], self._word_id))
 
-    def outcome_unknown_cluster(self):
+    def unknown_outcome_cluster(self):
         return self.outcome_cluster[0:morph.max_unkown_id]
 
     def feature_vec(self):
