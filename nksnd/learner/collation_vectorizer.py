@@ -36,7 +36,7 @@ class CollationVectorizer():
 
     def _numbered(self, samples):
         for features, outcome in samples:
-            yield [self._feature_id(f) for f in features],     self._outcome_id[outcome]
+            yield [self._feature_id(f) for f in features],     self._outcome_id(outcome)
 
     def fit_transform(self, file_names):
         files = [open(fname) for fname in file_names]
@@ -84,13 +84,11 @@ class CollationVectorizer():
         map(lambda f: f.close(), files)
         return x
 
-    # Do funny things when file_names contain words
-    # which are not contained in files given to fit.
     def transform(self, file_names):
         files = [open(fname) for fname in file_names]
         lines = utils.concat(files)
         sentences = (line.split() for line in lines)
-        mrphs_list = _corpus_tokenier(sentences, self._cut_off_set)
+        mrphs_list = _corpus_tokenier(sentences)
         samples = _collation_samples(mrphs_list)
         numbered_samples = self._numbered(samples)
         indicies=[]
