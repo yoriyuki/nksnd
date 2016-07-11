@@ -117,7 +117,7 @@ class CollationVectorizer():
     def feature_vec(self):
         indicies=[]
         data=[]
-        indptr=[0]
+        indptr=[]
         for w in self._word_id.keys():
             indices.append(self._feature_id(w))
             data.append(1)
@@ -125,3 +125,15 @@ class CollationVectorizer():
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
         x = self._svd.transform(x_raw)
         return dict(map(lambda w: x.getrow(self._feature_id(w)),    self.word_id.keys()))
+
+    def unknown_feature_vec(self):
+        indicies=[]
+        data=[]
+        indptr=[]
+        for i in range(1+morph.max_unkown_id):
+            indices.append(i)
+            data.append(1)
+        indptr.append(len(indices))
+        x_raw = csr_matrix((data, indices, indptr), dtype=int)
+        x = self._svd.transform(x_raw)
+        return list(map(lambda i: x.getrow(i), range(1+morph.max_unkown_id))
