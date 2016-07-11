@@ -60,7 +60,8 @@ class CollationVectorizer():
 
         indicies=[]
         data=[]
-        indptr=[]
+        indptr=[0]
+        outcomes=[0]
         for features, outcome in numbered_samples:
             for f in features:
                 indices.append(f)
@@ -104,4 +105,9 @@ class CollationVectorizer():
         return x
 
     def outcome_cluster(self, outcome):
-        return self._outcome_cluster[self._outcome_id[outcome]]
+        outcome_id = self._outcome_id(outcome)
+        if outcome_id in self._outcome_cluster:
+            return self._outcome_cluster[outcome_id]
+        else:
+            # a word which does not appear in the corpus, even its unknown form, is mapped to 0
+            return self._outcome_cluster[0]
