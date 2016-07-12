@@ -1,7 +1,7 @@
 from basictypes import utils, morph
 from sklearn.decomposition import TruncatedSVD
 from sklearn.cluster import AgglomerativeClustering
-from scipy.sparse import csr_matrix, dok_matrix, linalg, diags
+from scipy.sparse import csr_matrix, lil_matrix, linalg, diags
 
 def _cut_off_set(sentences):
     counts = count_words(sentences)
@@ -82,8 +82,8 @@ class CollationVectorizer():
         x = self._feature_reduction.fit_transform(x_raw)
 
         #clustering outcomes
-        y = dok_matrix((self.outcome_num(), self._feature_dim))
-        for i in range(self.outcome_num()):
+        y = lil_matrix((self._outcome_num(), self._feature_dim))
+        for i in range(self._outcome_num()):
             y[outcomes[i], i] = 1
         #FIXME! 1 + ... Hack to avoid div by 0!
         inverse_count = linalg.inv(diags(1 + y_raw.sum(1)))
