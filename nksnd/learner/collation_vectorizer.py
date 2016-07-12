@@ -11,11 +11,11 @@ def _corpus_tokenizer(sentences):
     for sentence in sentences:
         yield [morph.Morph(word) for word in sentence]
 
-def _collation_samples(mrphs_list):
+def collation_samples(mrphs_list):
     for mrphs in mrphs_list:
         for i in range(len(mrphs)):
-            features = set([m.key() for m in mrphs[0:i-1]])
-            yield (features, mrphs[i].key())
+            features = set(mrphs[0:i-1])
+            yield (features, mrphs[i])
 
 class CollationVectorizer():
     def __init__(self, feature_dim, outcome_cluster_num):
@@ -74,8 +74,8 @@ class CollationVectorizer():
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
 
         #compressing features
-        self._svd = TruncatedSVD(n_components=self._feature_dim)
-        x = self._svd.fit_transform(x_raw)
+        self._feature_reduction = TruncatedSVD(n_components=self._feature_dim)
+        x = self._feature_reduction.fit_transform(x_raw)
 
         #clustering outcomes
         y = dok_matrix((self.outcome_num(), self._feature_dim))
@@ -107,35 +107,22 @@ class CollationVectorizer():
             indptr.append(len(indices))
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
         self.clustered_outcomes = [self._outcome_clusters[i] for i in outcomes]
-        x = self._svd.transform(x_raw)
+        x = self._feature_reduction.transform(x_raw)
         return x
 
-    def outcome_cluster_map(self):
-        return dict(map(lambda i: self._outcome_cluster[i], self._word_id))
+    def outcome_cluster(self, morph):
+        return self._outcome_clusters[self._outcome_id(morph)]
 
-    def unknown_outcome_cluster_map(self):
-        return self._outcome_cluster[0:morph.max_unkown_id]
-
-    def feature_vec_map(self):
+    def feature_vecs(self, contexts):
+        features_seq = ((self._feature_id(morph) for morph in context) for context in contexts)
         indicies=[]
         data=[]
         indptr=[]
-        for w in self._word_id.keys():
-            indices.append(self._feature_id(w))
-            data.append(1)
-        indptr.append(len(indices))
+        for features in features_list:
+            for f in feature_ids:
+                indices.append(f)
+                data.append(1)
+            indptr.append(len(indices))
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
-        x = self._svd.transform(x_raw)
-        return dict(map(lambda w: x.getrow(self._feature_id(w)),    self.word_id.keys()))
-
-    def unknown_feature_vec_map(self):
-        indicies=[]
-        data=[]
-        indptr=[]
-        for i in range(1+morph.max_unkown_id):
-            indices.append(i)
-            data.append(1)
-        indptr.append(len(indices))
-        x_raw = csr_matrix((data, indices, indptr), dtype=int)
-        x = self._svd.transform(x_raw)
-        return list(map(lambda i: x.getrow(i), range(1+morph.max_unkown_id))
+        x = self._feature_reduction.transform(x_raw)
+        return x
