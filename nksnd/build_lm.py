@@ -29,16 +29,9 @@ if __name__ == "__main__":
     feature_num = args.featurenum
     outcome_num = args.clusternum
 
-    files = map(open, inputs)
-    lines = utiles.concat(files)
-    word_lists = map(lambda line: line.split(), lines)
-    sentences = map(lambda word_list: map(morph.Morph, word_list), word_lists)
-
     model = collation_lm.CollationLM(penalty=penalty, solver=solver,
         max_iter=max_iter, feature_num=feature_num, outcome_num=outcome_num)
-    model.train(sentences)
-
-    map(lambda f: f.close(), files)
+    model.train(inputs)
 
     with open(output_file, 'wb') as f:
         cPickle.dump(model, f, 2)
