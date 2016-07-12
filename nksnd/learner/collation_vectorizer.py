@@ -87,6 +87,7 @@ class CollationVectorizer():
         self._outcome_clusters =
             self._cl.fit_predict(inverse_count.dot(y_raw.dot(x)))
         map(lambda f: f.close(), files)
+        self.clustered_outcomes = [self._outcome_clusters[i] for i in outcomes]
         return x
 
     def transform(self, file_names):
@@ -105,16 +106,17 @@ class CollationVectorizer():
                 data.append(1)
             indptr.append(len(indices))
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
+        self.clustered_outcomes = [self._outcome_clusters[i] for i in outcomes]
         x = self._svd.transform(x_raw)
         return x
 
-    def outcome_cluster(self):
+    def outcome_cluster_map(self):
         return dict(map(lambda i: self._outcome_cluster[i], self._word_id))
 
-    def unknown_outcome_cluster(self):
-        return self.outcome_cluster[0:morph.max_unkown_id]
+    def unknown_outcome_cluster_map(self):
+        return self._outcome_cluster[0:morph.max_unkown_id]
 
-    def feature_vec(self):
+    def feature_vec_map(self):
         indicies=[]
         data=[]
         indptr=[]
@@ -126,7 +128,7 @@ class CollationVectorizer():
         x = self._svd.transform(x_raw)
         return dict(map(lambda w: x.getrow(self._feature_id(w)),    self.word_id.keys()))
 
-    def unknown_feature_vec(self):
+    def unknown_feature_vec_map(self):
         indicies=[]
         data=[]
         indptr=[]
