@@ -21,7 +21,7 @@ def reverse_map(dict):
 
 def is_hiragana(string):
     for c in string:
-        if "ぁ" <= ch <= "ん":
+        if "ぁ" <= c <= "ん":
             continue
         else:
             return False
@@ -29,7 +29,7 @@ def is_hiragana(string):
 
 def is_katakana(string):
     for c in string:
-        if "ァ" <= ch <= "ン":
+        if "ァ" <= c <= "ン":
             continue
         else:
             return False

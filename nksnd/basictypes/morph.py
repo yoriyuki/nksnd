@@ -1,4 +1,4 @@
-import utils
+from basictypes import utils
 
 max_unkown_id = 21
 
@@ -7,7 +7,7 @@ class Morph:
         self._surface = surface
         if utils.is_hiragana(surface):
             self._kind = 'hiragana'
-        else if utils.is_katakana(surdace):
+        elif utils.is_katakana(surface):
             self._kind = 'katakana'
         else:
             self._kind = 'other'
@@ -23,9 +23,9 @@ class Morph:
         return self._surface
 
     def unknown_key(self):
-        if self._kind = 'hiragana':
+        if self._kind == 'hiragana':
             return self._len
-        else if self._kind = 'katakana':
+        elif self._kind == 'katakana':
             return 7 + self._len
         else:
             return 14 + self._len

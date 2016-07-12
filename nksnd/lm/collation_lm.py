@@ -1,7 +1,8 @@
-from ..lerner.collation_vectorizer import CollationVectorizer
-from ..lerner.collation_vectorizer import collation_samples
-from ..basictypes import utils
-
+from learner.collation_vectorizer import CollationVectorizer
+from learner.collation_vectorizer import collation_samples
+from basictypes import utils
+from sklearn.linear_model import LogisticRegression
+from sklearn.decomposition import TruncatedSVD
 
 
 class CollationLM:
@@ -25,7 +26,7 @@ class CollationLM:
         return self._outcome_num
 
     def train(self, file_names):
-        print("vectorinzing...")
+        print("vectorizing...")
         self._vectorizer = CollationVectorizer(self._feature_num, self._outcome_num)
         x = self._vectorizer.fit_transform(file_names)
         y = self._vectorizer.clustered_outcomes

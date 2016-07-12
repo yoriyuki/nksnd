@@ -1,1 +1,1 @@
-__all__ = [collation_vectorizer]
+__all__ = ["collation_vectorizer"]

@@ -3,7 +3,7 @@ from basictypes import utils
 from basictypes import morph
 import argparse
 import os
-import cPickle
+import pickle
 
 if __name__ == "__main__":
 
@@ -34,4 +34,4 @@ if __name__ == "__main__":
     model.train(inputs)
 
     with open(output_file, 'wb') as f:
-        cPickle.dump(model, f, 2)
+        Pickle.dump(model, f, 2)
