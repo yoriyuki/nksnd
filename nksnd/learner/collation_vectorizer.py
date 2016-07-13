@@ -77,8 +77,6 @@ class CollationVectorizer():
             indptr.append(len(indices))
             outcomes.append(outcome)
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
-        print(x_raw.shape, len(outcomes))
-        print(x_raw.todense())
 
         #compressing features
         self._feature_reduction = TruncatedSVD(n_components=self._feature_dim)
@@ -92,7 +90,6 @@ class CollationVectorizer():
         diagonal = [max(s, 1) for s in outcome_counts]
         inverse_count = linalg.inv(diags(diagonal))
         self._cl = AgglomerativeClustering(n_clusters=self._outcome_cluster_num)
-        print(inverse_count.shape, y_raw.shape, x.shape)
         self._outcome_clusters = self._cl.fit_predict(inverse_count.dot(y_raw).dot(x))
         map(lambda f: f.close(), files)
         self.clustered_outcomes = [self._outcome_clusters[i] for i in outcomes]
