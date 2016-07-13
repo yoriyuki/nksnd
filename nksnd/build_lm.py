@@ -34,4 +34,4 @@ if __name__ == "__main__":
     model.train(inputs)
 
     with open(output_file, 'wb') as f:
-        Pickle.dump(model, f, 2)
+        pickle.dump(model, f, 2)

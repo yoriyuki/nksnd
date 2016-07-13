@@ -2,6 +2,7 @@ from basictypes import utils, morph
 from sklearn.decomposition import TruncatedSVD
 from sklearn.cluster import AgglomerativeClustering
 from scipy.sparse import csr_matrix, lil_matrix, linalg, diags
+from numpy import ndarray
 
 def _cut_off_set(sentences):
     counts = count_words(sentences)
@@ -40,7 +41,7 @@ class CollationVectorizer():
             yield [self._feature_id(f) for f in features],     self._outcome_id(outcome)
 
     def _outcome_num(self):
-        morph.max_unkown_id + len(self._word_id)
+        return morph.max_unkown_id + 1 + len(self._word_id)
 
     def fit_transform(self, file_names):
         files = [open(fname) for fname in file_names]
@@ -68,7 +69,7 @@ class CollationVectorizer():
         indices=[]
         data=[]
         indptr=[0]
-        outcomes=[0]
+        outcomes=[]
         for features, outcome in numbered_samples:
             for f in features:
                 indices.append(f)
@@ -76,19 +77,23 @@ class CollationVectorizer():
             indptr.append(len(indices))
             outcomes.append(outcome)
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
+        print(x_raw.shape, len(outcomes))
+        print(x_raw.todense())
 
         #compressing features
         self._feature_reduction = TruncatedSVD(n_components=self._feature_dim)
         x = self._feature_reduction.fit_transform(x_raw)
 
         #clustering outcomes
-        y = lil_matrix((self._outcome_num(), self._feature_dim))
-        for i in range(self._outcome_num()):
-            y[outcomes[i], i] = 1
-        #FIXME! 1 + ... Hack to avoid div by 0!
-        inverse_count = linalg.inv(diags(1 + y_raw.sum(1)))
+        y_raw = lil_matrix((self._outcome_num(), len(outcomes)), dtype=int)
+        for i in range(len(outcomes)):
+            y_raw[outcomes[i], i] = 1
+        outcome_counts = ndarray.transpose(y_raw.sum(1)).tolist()[0]
+        diagonal = [max(s, 1) for s in outcome_counts]
+        inverse_count = linalg.inv(diags(diagonal))
         self._cl = AgglomerativeClustering(n_clusters=self._outcome_cluster_num)
-        self._outcome_clusters = self._cl.fit_predict(inverse_count.dot(y_raw.dot(x)))
+        print(inverse_count.shape, y_raw.shape, x.shape)
+        self._outcome_clusters = self._cl.fit_predict(inverse_count.dot(y_raw).dot(x))
         map(lambda f: f.close(), files)
         self.clustered_outcomes = [self._outcome_clusters[i] for i in outcomes]
         return x

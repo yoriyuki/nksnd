@@ -34,7 +34,7 @@ class CollationLM:
         print("training...")
         self._model.fit(x, y)
         sparcity = (self._model.coef_ == 0).sum() / float(self._model.coef_.size)
-        print("Sparcity:"), sparcity
+        print("Sparcity:", sparcity)
         if sparcity >= 0.5:
             self._model.sparsify()
 
