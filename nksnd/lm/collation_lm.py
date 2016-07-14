@@ -6,7 +6,7 @@ from sklearn.decomposition import TruncatedSVD
 
 
 class CollationLM:
-    def __init__(self, penalty='l2', solver='lbfgs', max_iter=10, feature_num=1000, outcome_num=1000):
+    def __init__(self, penalty='l2', solver='lbfgs', max_iter=30, feature_num=1000, outcome_num=1000):
         self._model = LogisticRegression(penalty=penalty, solver=solver, verbose=1, max_iter=max_iter)
         self._decomp_features = TruncatedSVD(n_components=feature_num)
         self._feature_num = feature_num
