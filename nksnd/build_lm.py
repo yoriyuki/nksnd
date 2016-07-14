@@ -14,7 +14,7 @@ if __name__ == "__main__":
         help='output directory: default:../data')
     parser.add_argument('-p', '--penalty', default='l2', help='penalty')
     parser.add_argument('-s', '--solver', default='lbfgs', help='solver')
-    parser.add_argument('-m', '--max_iter', default=10, type=int,
+    parser.add_argument('-m', '--max_iter', default=30, type=int,
         help='max iteraion')
     parser.add_argument('-f', '--featurenum', default=1000, help='number of features', type=int)
     parser.add_argument('-c', '--clusternum', default=1000, help="number of outcome clusters", type=int)
