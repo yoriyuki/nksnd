@@ -82,7 +82,7 @@ class CollationVectorizer():
         x_raw = csr_matrix((data, indices, indptr), dtype=int)
 
         #statistics
-        print("Samples: " + len(outcomes) + " ,words: " + len(self._word_id))
+        print("Samples: " + str(len(outcomes)) + " ,words: " + str(len(self._word_id)))
 
         #compressing features
         self._feature_reduction = TruncatedSVD(n_components=self._feature_dim)
