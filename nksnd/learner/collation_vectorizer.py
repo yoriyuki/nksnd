@@ -15,7 +15,7 @@ def _corpus_tokenizer(sentences):
 def collation_samples(mrphs_list):
     for mrphs in mrphs_list:
         for i in range(len(mrphs)):
-            features = set(mrphs[0:i-1])
+            features = frozenset(mrphs[0:i-1])
             yield (features, mrphs[i])
 
 class CollationVectorizer():
@@ -41,6 +41,9 @@ class CollationVectorizer():
             yield [self._feature_id(f) for f in features],     self._outcome_id(outcome)
 
     def _outcome_num(self):
+        return morph.max_unkown_id + 1 + len(self._word_id)
+
+    def _feature_id_num(self):
         return morph.max_unkown_id + 1 + len(self._word_id)
 
     def fit_transform(self, file_names):
@@ -105,32 +108,24 @@ class CollationVectorizer():
         mrphs_list = _corpus_tokenier(sentences)
         samples = _collation_samples(mrphs_list)
         numbered_samples = self._numbered(samples)
-        indicies=[]
-        data=[]
-        indptr=[]
-        for features, outcome in numbered_samples:
-            for f in features:
-                indices.append(f)
-                data.append(1)
-            indptr.append(len(indices))
-        x_raw = csr_matrix((data, indices, indptr), dtype=int)
-        self.clustered_outcomes = [self._outcome_clusters[i] for i in outcomes]
-        x = self._feature_reduction.transform(x_raw)
-        return x
+        contexts = (context for context, outcome in numbered_samples)
+        self.feature_vecs(contexts)
 
     def outcome_cluster(self, morph):
         return self._outcome_clusters[self._outcome_id(morph)]
 
     def feature_vecs(self, contexts):
         features_seq = ((self._feature_id(morph) for morph in context) for context in contexts)
-        indicies=[]
+        indices=[]
         data=[]
-        indptr=[]
-        for features in features_list:
-            for f in feature_ids:
+        indptr=[0]
+        sample_num = 0
+        for features in features_seq:
+            sample_num += 1
+            for f in features:
                 indices.append(f)
                 data.append(1)
             indptr.append(len(indices))
-        x_raw = csr_matrix((data, indices, indptr), dtype=int)
+        x_raw = csr_matrix((data, indices, indptr), shape=(sample_num, self._feature_id_num()), dtype=int)
         x = self._feature_reduction.transform(x_raw)
         return x

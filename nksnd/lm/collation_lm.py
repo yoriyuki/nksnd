@@ -12,11 +12,11 @@ class CollationLM:
         self._feature_num = feature_num
         self._outcome_num = outcome_num
 
-    def _probability(prob, mrphs):
+    def _probability(self, prob, mrphs):
         p = 1.0
         for i in range(len(mrphs)):
             c = self._vectorizer.outcome_cluster(mrphs[i])
-            p = p * prob[tuple(mrphs[0:i-1])][c]
+            p = p * prob[frozenset(mrphs[0:i-1])][c]
         return p
 
     def feature_num(self):
@@ -38,12 +38,12 @@ class CollationLM:
         if sparcity >= 0.5:
             self._model.sparsify()
 
-    def predict_proba(mrphs_list):
+    def predict_proba(self, mrphs_list):
         context_set = set((c for c, f in collation_samples(mrphs_list)))
-        contexts = tuple(context_set)
+        contexts = list(context_set)
         feature_vecs = self._vectorizer.feature_vecs(contexts)
         x = self._model.predict_proba(feature_vecs)
         prob={}
-        for i in range(contexts):
-            prob[contexts[i]] = x.getrow(i)
+        for i in range(len(contexts)):
+            prob[contexts[i]] = x[i,:].tolist()
         return [self._probability(prob, mrphs) for mrphs in mrphs_list]
