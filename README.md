@@ -4,7 +4,7 @@
 Currently, nksnd is under development and not usable as a conversion engine.  The supposed user is a developer who want to develop a new kana-kanji or similar conversion engine.
 
 ## Download
-Close from github.  There is no master branch.  Currently there is only one integration branch:
+Clone from github.  There is no master branch.  Currently there is only one integration branch:
 
 - nksnd-warabi
 
