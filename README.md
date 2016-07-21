@@ -1,5 +1,7 @@
 # nksnd: Kana-kanji conversion engine
 
+Copyright (C) 2016: National Institute of Advanced Industrial Science and Technology (AIST)
+
 ## Status
 Currently, nksnd is under development and not usable as a conversion engine.  The supposed user is a developer who want to develop a new kana-kanji or similar conversion engine.
 
