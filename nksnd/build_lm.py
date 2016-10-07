@@ -1,4 +1,4 @@
-from lm import collation_lm
+from lm import collocation_lm
 from basictypes import concat_files
 from basictypes import morph
 import argparse
@@ -20,13 +20,13 @@ if __name__ == "__main__":
     parser.add_argument('inputs', nargs='+',
         help='input corpus')
     args = parser.parse_args()
-    output_file = os.path.join(args.outdir, 'collation_lm')
+    output_file = os.path.join(args.outdir, 'collocation_lm')
     inputs = args.inputs
 
     files = map(open, inputs)
     lines = concat_files.concat(files)
 
-    model = collation_lm.CollationLM()
+    model = collocation_lm.CollocationLM()
     model.train(gen_data(lines))
     model.save(output_file)
 

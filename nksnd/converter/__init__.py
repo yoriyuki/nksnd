@@ -1,1 +1,1 @@
-__all__=["collation_score"]
+__all__=["collocation_score"]

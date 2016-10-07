@@ -1,6 +1,6 @@
 from basictypes import genmaxent
 
-class CollationLM:
+class CollocationLM:
     def __init__(self):
         self._model = genmaxent.GenMaxEntModel()
 
