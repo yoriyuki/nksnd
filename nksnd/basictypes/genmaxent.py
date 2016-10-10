@@ -3,11 +3,6 @@ from maxent import set_verbose
 
 set_verbose(1)
 
-def encode_event(event):
-    context, outcome = event
-    context = [feature.encode('utf-8') for feature in context]
-    return context, outcome.encode('utf-8')
-
 class GenMaxEntModel:
     def __init__(self):
         self.__m = MaxentModel()
@@ -27,8 +22,8 @@ class GenMaxEntModel:
     def train(self, events, cutoff=1):
         self.__begin_add_event()
         for event in events:
-            context, outcome = encode_event(event)
-            self.__add_event(context, outcome)
+            context, outcome = event
+            self.__add_event(context, outcome
         self.__end_add_event(cutoff)
         self.__train()
 
@@ -39,8 +34,7 @@ class GenMaxEntModel:
         self.__m.load(name)
 
     def eval(self, context, outcome):
-        context, outcome = encode_event((context, outcome))
-        return self.__m.eval(context, outcome)
+        return self.__m.eval(get_features(context), outcome.key())
 
 
 def _test():

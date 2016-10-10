@@ -1,1 +1,1 @@
-__all__=["genmaxent", "concat_files", "morph"]
+__all__=["genmaxent", "concat_files", "words"]
