@@ -27,11 +27,23 @@ def replace_word(known_words, word):
     else:
         return words.unknownword(word)
 
+def features(context):
+    length = len(context)
+    if length > 2:
+        collocations = [':' + word for word in context[0:length-3]]
+        return collocations + ['2' + context[-2], '1' + context[-1]]
+    elif length == 2:
+        return ['2' + context[0], '1' + context[1]]
+    elif length == 1:
+        return ['1' + context[0]]
+    else:
+        return []
+
 def gen_data(known_words,sentences):
     for sentence in sentences:
         words = [replace_word(known_words, word) for word in sentence]
         for i in range(len(words)):
-            yield (words[0:i-1], words[i])
+            yield (features(words[0:i-1]), words[i])
 
 class CollocationLM:
     def __init__(self):
@@ -60,7 +72,7 @@ class CollocationLM:
         words = [replace_word(self.known_words, word) for word in sentence]
         p = 1.0
         for i in range(len(words)):
-            p = p * self._eval(words[0:i-1], words[i])
+            p = p * self._eval(features(words[0:i-1]), words[i])
         return p
 
     def save(self, path):
