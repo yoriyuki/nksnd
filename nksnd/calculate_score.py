@@ -9,4 +9,4 @@ lm.load('../data/')
 
 for line in stdin:
     sentence = line.split()
-    print line.rstrip('\n') + "," + str(lm.collocation_score(sentence))
+    print(line.rstrip('\n') + "," + str(lm.collocation_score(sentence)))
