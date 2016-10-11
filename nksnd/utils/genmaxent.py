@@ -1,5 +1,6 @@
 from maxent import MaxentModel
 from maxent import set_verbose
+from config import lmconfig
 
 set_verbose(1)
 
@@ -22,7 +23,7 @@ class GenMaxEntModel:
         self.__m.add_event(context, outcome)
 
     def __train(self):
-        self.__m.train(5, "lbfgs", 2)
+        self.__m.train(lmconfig.iteration, "lbfgs", lmconfig.gaussian)
 
     def train(self, events, cutoff=1):
         self.__begin_add_event()
