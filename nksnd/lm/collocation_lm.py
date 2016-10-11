@@ -2,6 +2,7 @@ from utils import genmaxent, words
 import codecs
 import pickle
 import os
+from config import lmconfig
 
 def concat(files):
     for file in files:
@@ -18,7 +19,7 @@ def count_words(sentences):
                 counts[word] = 1
     return counts
 
-def cut_off_set(counts, cut_off=1):
+def cut_off_set(counts, cut_off):
     return { x for x in counts.keys() if counts[x] > cut_off }
 
 def replace_word(known_words, word):
@@ -58,7 +59,7 @@ class CollocationLM:
         lines = concat(files)
         sentences = (line.split() for line in lines)
         counts = count_words(sentences)
-        self.known_words = cut_off_set(counts)
+        self.known_words = cut_off_set(counts, lmconfig.unknownword_threshold)
         map(lambda f: f.close(), files)
 
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
