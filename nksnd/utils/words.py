@@ -22,15 +22,24 @@ def escapeword(word):
     else:
         return word
 
+def surface_pronoun(word):
+    a = word.split('/')
+    if len(a) != 2:
+        print("Warning: mulformed wordkkci " + str(a))
+    return (a[0], a[1])
+
 def unknownword(word):
-    if is_hiragana(word):
+    s, p = surface_pronoun(word)
+    if is_hiragana(s):
         kind = u'H'
-    elif is_katakana(word):
+    elif is_katakana(s):
         kind = u'K'
+    elif s == p:
+        kind = u'E'
     else:
         kind = u'O'
-    if len(word) <= 6:
-        length = len(word)
+    if len(p) <= 6:
+        length = len(p)
     else:
         length = 7
     return '_' + kind + str(length)

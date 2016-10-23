@@ -8,5 +8,5 @@ lm = collocation_lm.CollocationLM()
 lm.load('../data/')
 
 for line in stdin:
-    sentence = line.split()
+    sentence = line.split(' ')
     print(line.rstrip('\n') + "," + str(lm.collocation_score(sentence)))

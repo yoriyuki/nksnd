@@ -57,14 +57,14 @@ class CollocationLM:
 
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
-        sentences = (line.split() for line in lines)
+        sentences = (line.split(' ') for line in lines)
         counts = count_words(sentences)
         self.known_words = cut_off_set(counts, lmconfig.unknownword_threshold)
         map(lambda f: f.close(), files)
 
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
-        sentences = (line.split() for line in lines)
+        sentences = (line.split(' ') for line in lines)
         data = gen_data(self.known_words, sentences)
         self._model.train(data, cutoff=1)
         map(lambda f: f.close(), files)
@@ -84,8 +84,10 @@ class CollocationLM:
             pickle.dump(self.known_words, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
-        param_filename = os.path.join(path, 'collocation_param')
-        self._model.load(param_filename)
+        print("loading known words...")
         words_filename = os.path.join(path, 'known_words')
         with open(words_filename, 'r+b') as f:
             self.known_words = pickle.load(f)
+        print("loading collocation paramaters...")
+        param_filename = os.path.join(path, 'collocation_param')
+        self._model.load(param_filename)
