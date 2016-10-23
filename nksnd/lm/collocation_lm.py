@@ -1,32 +1,5 @@
-from utils import genmaxent, words
-import codecs
-import pickle
+from utils import genmaxent
 import os
-from config import lmconfig
-
-def concat(files):
-    for file in files:
-        for line in file:
-            yield line
-
-def count_words(sentences):
-    counts = {}
-    for sentence in sentences:
-        for word in sentence:
-            if word in counts:
-                counts[word] += 1
-            else:
-                counts[word] = 1
-    return counts
-
-def cut_off_set(counts, cut_off):
-    return { x for x in counts.keys() if counts[x] > cut_off }
-
-def replace_word(known_words, word):
-    if word in known_words:
-        return word
-    else:
-        return words.unknownword(word)
 
 def features(context):
     length = len(context)
@@ -40,9 +13,8 @@ def features(context):
     else:
         return []
 
-def gen_data(known_words,sentences):
-    for sentence in sentences:
-        words = [replace_word(known_words, word) for word in sentence]
+def gen_data(words_seq):
+    for words in words_seq:
         for i in range(len(words)):
             yield (features(words[0:i-1]), words[i])
 
@@ -53,24 +25,11 @@ class CollocationLM:
     def _eval(self, context, outcome):
         return self._model.eval(context, outcome)
 
-    def train(self, file_names):
-
-        files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
-        lines = concat(files)
-        sentences = (line.split(' ') for line in lines)
-        counts = count_words(sentences)
-        self.known_words = cut_off_set(counts, lmconfig.unknownword_threshold)
-        map(lambda f: f.close(), files)
-
-        files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
-        lines = concat(files)
-        sentences = (line.split(' ') for line in lines)
-        data = gen_data(self.known_words, sentences)
+    def train(self, words_seq):
+        data = gen_data(words_seq)
         self._model.train(data, cutoff=1)
-        map(lambda f: f.close(), files)
 
-    def collocation_score(self, sentence):
-        words = [replace_word(self.known_words, word) for word in sentence]
+    def score(self, words):
         p = 1.0
         for i in range(len(words)):
             p = p * self._eval(features(words[0:i-1]), words[i])
@@ -79,15 +38,7 @@ class CollocationLM:
     def save(self, path):
         param_filename = os.path.join(path, 'collocation_param')
         self._model.save(param_filename)
-        words_filename = os.path.join(path, 'known_words')
-        with open(words_filename, 'w+b') as f:
-            pickle.dump(self.known_words, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self, path):
-        print("loading known words...")
-        words_filename = os.path.join(path, 'known_words')
-        with open(words_filename, 'r+b') as f:
-            self.known_words = pickle.load(f)
-        print("loading collocation paramaters...")
         param_filename = os.path.join(path, 'collocation_param')
         self._model.load(param_filename)

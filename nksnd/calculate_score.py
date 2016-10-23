@@ -1,12 +1,12 @@
-from lm import collocation_lm
+from lm import lm
 import sys
 import codecs
 stdin = codecs.getreader('utf-8')(sys.stdin)
 stdout = codecs.getwriter('utf-8')(sys.stdout)
 
-lm = collocation_lm.CollocationLM()
+lm = lm.LM()
 lm.load('../data/')
 
 for line in stdin:
     sentence = line.split(' ')
-    print(line.rstrip('\n') + "," + str(lm.collocation_score(sentence)), stdout)
+    print(line.rstrip('\n') + "," + str(lm.score(sentence)), stdout)

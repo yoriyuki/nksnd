@@ -1,4 +1,4 @@
-from lm import collocation_lm
+from lm import lm
 from config import lmconfig
 import argparse
 import os
@@ -25,6 +25,6 @@ if __name__ == "__main__":
     lmconfig.unknownword_threshold = args.unknownword_threshold
     inputs = args.inputs
 
-    model = collocation_lm.CollocationLM()
+    model = lm.LM()
     model.train(inputs)
     model.save(args.outdir)
