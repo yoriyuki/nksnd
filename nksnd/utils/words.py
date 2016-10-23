@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import jaconv
+import romkan
+
 def is_hiragana(string):
     for c in string:
         if u"ぁ" <= c <= u"ん":
@@ -37,3 +40,12 @@ def unknownword(word):
     else:
         length = 7
     return '_' + kind + str(length)
+
+def literal_word(string):
+    return string + '/' + string
+
+def katakana_word(string):
+    return jaconv.hira2kata(string) + '/' + string
+
+def latin_word(string):
+    return romkan.to_roma(string) + '/' + string
