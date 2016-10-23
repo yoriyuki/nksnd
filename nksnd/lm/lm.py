@@ -2,6 +2,7 @@ import collocation_lm
 import codecs
 import pickle
 import os
+import marisa_trie
 from utils import words
 from config import lmconfig
 
@@ -21,7 +22,7 @@ def count_words(sentences):
     return counts
 
 def cut_off_set(counts, cut_off):
-    return { x for x in counts.keys() if counts[x] > cut_off }
+    return marisa_trie.Trie((x for x in counts.keys() if counts[x] > cut_off))
 
 def replace_word(known_words, word):
     if word in known_words:
