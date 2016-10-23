@@ -24,7 +24,7 @@ def cut_off_set(counts, cut_off):
 
 def replace_word(known_words, word):
     if word in known_words:
-        return words.escapeword(word)
+        return word
     else:
         return words.unknownword(word)
 

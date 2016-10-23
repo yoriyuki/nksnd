@@ -16,12 +16,6 @@ def is_katakana(string):
             return False
     return True
 
-def escapeword(word):
-    if word[0] == '_':
-        return '_' + word
-    else:
-        return word
-
 def surface_pronoun(word):
     a = word.split('/')
     if len(a) != 2:
