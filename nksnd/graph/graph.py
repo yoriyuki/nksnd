@@ -1,8 +1,8 @@
 class Node:
-    def __init__(self, start_pos, word):
+    def __init__(self, start_pos, key, word):
         self.start_pos = start_pos
         self.word = word
-        self.prev_nodes = prev_nodes
+        self.key = key
 
 class BOS(Node):
     def __init__(self):
@@ -14,6 +14,7 @@ class EOS(Node):
 
 class Graph:
     def __init__(self, dict, string):
+        self.x_length = len(string)
         self.nodes_list = [[] for i in range(1 + len(string))]
         self.nodes_list[0].append(BOS())
 
@@ -22,14 +23,14 @@ class Graph:
             prefixes = dict.preficxes(sub)
             for key in prefixes:
                 for word in dict[key]:
-                    self.nodes_list[i+len(key)].append(Node(i, word)
+                    self.nodes_list[i+len(key)].append(Node(i, key, word)
 
             if prefixes == []:
                 for j in range(i, len(string)):
                     if dict.prefixes(string[j:-1]) != []: #slow
                         s = string[i:j]
-                        self.nodes_list[j].append(Node(i, literal_word(s)))
-                        self.nodes_list[j].append(Node(i, katakana_word(s))
-                        self.nodes_list[j].append(Node(i, latin_word(s)))
+                        self.nodes_list[j].append(Node(i, s, literal_word(s)))
+                        self.nodes_list[j].append(Node(i, s, katakana_word(s))
+                        self.nodes_list[j].append(Node(i, s, latin_word(s)))
 
         self.nodes_list.append(EOS(1 + len(s)))
