@@ -1,6 +1,7 @@
-from utils import genmaxent, words
+from utils import genmaxent
 import os
 
+<<<<<<< HEAD
 def pronounciation_feature(word):
     if words.is_unknown(word):
         return 'L' + words.unknown_length(word)
@@ -9,22 +10,24 @@ def pronounciation_feature(word):
         return '/' + p
 
 def features(context, outcome):
+=======
+def features(context):
+>>>>>>> parent of 0c7bd65... Add pronounciation of the outcome to features
     length = len(context)
-    features = [pronounciation_feature(outcome)]
     if length > 2:
         collocations = [':' + word for word in context[0:length-3]]
-        return features + collocations + ['2' + context[-2], '1' + context[-1]]
+        return collocations + ['2' + context[-2], '1' + context[-1]]
     elif length == 2:
-        return features + ['2' + context[0], '1' + context[1]]
+        return ['2' + context[0], '1' + context[1]]
     elif length == 1:
-        return features + ['1' + context[0]]
+        return ['1' + context[0]]
     else:
-        return features
+        return []
 
 def gen_data(words_seq):
     for words in words_seq:
         for i in range(len(words)):
-            yield (features(words[0:i-1], words[i]), words[i])
+            yield (features(words[0:i-1]), words[i])
 
 class CollocationLM:
     def __init__(self):
@@ -40,7 +43,7 @@ class CollocationLM:
     def score(self, words):
         p = 1.0
         for i in range(len(words)):
-            p = p * self._eval(features(words[0:i-1], words[i]), words[i])
+            p = p * self._eval(features(words[0:i-1]), words[i])
         return p
 
     def save(self, path):
