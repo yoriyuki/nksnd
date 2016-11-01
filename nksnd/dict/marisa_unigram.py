@@ -10,6 +10,6 @@ class MarisaUnigram:
         self._dict[w]
 
     def map(self, path):
-        fmt = "<ff"
+        fmt = "<f"
         dict_filename = os.path.join(path, 'unigram_dict')
         self._dict = marisa_trie.RecordTrie(fmt).mmap(dict_filename)

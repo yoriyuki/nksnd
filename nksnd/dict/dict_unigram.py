@@ -27,13 +27,13 @@ class DictUnigram:
         self._normalized_count[word] = count
 
     def save(self, path):
-        fmt ="<ff"
+        fmt ="<f"
         trie = marisa_trie.RecordTrie(fmt, self._dict.iteritems())
         dict_filename = os.path.join(path, 'unigram_dict')
         with open(dict_filename, 'w') as file:
             trie.write(f)
 
     def map(self, path):
-        fmt = "<ff"
+        fmt = "<f"
         dict_filename = os.path.join(path, 'unigram_dict')
         self.dict = marisa_trie.RecordTrie(fmt).mmap(dict_filename)
