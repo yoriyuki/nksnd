@@ -9,4 +9,4 @@ lm.load('../data/')
 
 for line in stdin:
     sentence = line.split(' ')
-    print(line.rstrip('\n') + "," + str(lm.score(sentence)), stdout)
+    stdout.write(line.rstrip('\n') + "," + str(lm.score(sentence)) + "\n")
