@@ -49,3 +49,13 @@ def katakana_word(string):
 
 def latin_word(string):
     return romkan.to_roma(string) + '/' + string
+
+def is_unknown(word):
+    return not '/' in word
+
+def unknown_length(word):
+    return word[2]
+
+def separate_word(string):
+    a = string.split('/')
+    return a[0], a[1]
