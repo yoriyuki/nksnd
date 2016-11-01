@@ -41,6 +41,14 @@ def unknownword(word):
         length = 7
     return '_' + kind + str(length)
 
+
+def replace_word(known_words, word):
+    if word in known_words:
+        return word
+    else:
+        return words.unknownword(word)
+
+
 def literal_word(string):
     return string + '/' + string
 

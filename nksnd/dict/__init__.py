@@ -1,1 +1,1 @@
-__all__ = ["unigram", "bigram"]
+__all__ = ["dict_unigram", "marisa_unigram", "bigram"]
