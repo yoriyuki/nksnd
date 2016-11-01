@@ -5,7 +5,7 @@ def pronounciation_feature(word):
     if words.is_unknown(word):
         return 'L' + words.unknown_length(word)
     else:
-        e, p = words.separate_word(word)
+        e, p = words.surface_pronoun(word)
         return '/' + p
 
 def features(context, outcome):

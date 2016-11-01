@@ -48,7 +48,6 @@ def replace_word(known_words, word):
     else:
         return words.unknownword(word)
 
-
 def literal_word(string):
     return string + '/' + string
 
@@ -63,7 +62,3 @@ def is_unknown(word):
 
 def unknown_length(word):
     return word[2]
-
-def separate_word(string):
-    a = string.split('/')
-    return a[0], a[1]
