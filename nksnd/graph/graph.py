@@ -5,12 +5,14 @@ class Node:
         self.key = key
 
 class BOS(Node):
+    word = "_BOS"
     def __init__(self):
-        Node.__init__(None, None)
+        Node.__init__(None, "", BOS.word)
 
 class EOS(Node):
+    word = "_EOS"
     def __init__(self, start_pos):
-        Node.__init__(start_pos, None)
+        Node.__init__(start_pos, "", EOS.word)
 
 class Graph:
     def __init__(self, dict, string):

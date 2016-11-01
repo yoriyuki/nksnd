@@ -1,1 +1,1 @@
-__all__ = ["parameter_estimate"]
+__all__ = ["parameter_estimater"]
