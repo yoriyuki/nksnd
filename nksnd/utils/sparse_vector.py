@@ -16,10 +16,10 @@ class SparseVector:
 
     def logsumexp(self, sv):
         for key in sv.dict:
-            self.set(key) = numerics.logsumexp(self.get(key), sv.get(key))
+            self.set(key, numerics.logsumexp(self.get(key), sv.get(key)))
         return self
 
     def minusexp(self, sv):
         for key in sv.dict:
-            self.set(key) = self.get(key) - math.exp(sv.get(key))
+            self.set(key, self.get(key) - math.exp(sv.get(key)))
         return self

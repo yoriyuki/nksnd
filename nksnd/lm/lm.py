@@ -27,9 +27,9 @@ def cut_off_set(counts, cut_off):
     return marisa_trie.Trie((x for x in counts.keys() if counts[x] > cut_off))
 
 def pronounciation(sentence):
-    pronoun = ""
+    pronoun = u""
     for word in sentence:
-        s, p = words.surface_pronoun()
+        s, p = words.surface_pronoun(word)
         pronoun = pronoun + p
     return pronoun
 
@@ -51,8 +51,8 @@ class LM:
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        data = (pronounciation(s), s for s in sentences)
-        crf_estimater = CRFEsitimater(known_words)
+        data = ((pronounciation(s), s) for s in sentences)
+        crf_estimater = parameter_estimater.CRFEsitimater(self.known_words)
         crf_estimater.fit(data)
         self.dict = crf_estimater.dict
         map(lambda f: f.close(), files)
@@ -61,7 +61,7 @@ class LM:
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        words_seq = ([words.replace_word_word(self.known_words, word) for word in sentence] for sentence in sentences)
+        words_seq = ([words.replace_word(self.known_words, word) for word in sentence] for sentence in sentences)
         self.collocationLM.train(words_seq)
         map(lambda f: f.close(), files)
 
@@ -72,8 +72,7 @@ class LM:
     def save(self, path):
         print("Saving known words...")
         words_filename = os.path.join(path, 'known_words')
-        with open(words_filename, 'w+b') as f:
-            self.known_words.save(f)
+        self.known_words.save(words_filename)
 
         print("Saving the collocation language model...")
         self.collocationLM.save(path)
@@ -89,4 +88,4 @@ class LM:
         self.collocationLM.load(path)
         print("loading the CRF model...")
         self.dict = MarisaDict(self.known_words)
-        self.dict.map(path)
+        self.dict.mmap(path)

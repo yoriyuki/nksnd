@@ -26,6 +26,8 @@ def surface_pronoun(word):
     return (a[0], a[1])
 
 def unknownword(word):
+    if is_unknown(word):
+        return word
     s, p = surface_pronoun(word)
     if is_hiragana(s):
         kind = u'H'
@@ -39,14 +41,14 @@ def unknownword(word):
         length = len(p)
     else:
         length = 7
-    return u'_' + kind + str(length)
+    return u'_' + kind + unicode(str(length))
 
 
 def replace_word(known_words, word):
     if word in known_words:
         return word
     else:
-        return words.unknownword(word)
+        return unknownword(word)
 
 def literal_word(string):
     return string + u'/' + string
@@ -71,4 +73,4 @@ def is_bigram_key(key):
 
 def decompose_bigram_key(key):
     a = key.split(u' ')
-    reeturn a[0], a[1]
+    return a[0], a[1]

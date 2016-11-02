@@ -3,16 +3,15 @@ import os
 
 def features(context, outcome):
     length = len(context)
-    features = [pronounciation_feature(outcome)]
     if length > 2:
         collocations = [':' + word for word in context[0:length-3]]
-        return features + collocations + ['2' + context[-2], '1' + context[-1]]
+        return collocations + ['2' + context[-2], '1' + context[-1]]
     elif length == 2:
-        return features + ['2' + context[0], '1' + context[1]]
+        return ['2' + context[0], '1' + context[1]]
     elif length == 1:
-        return features + ['1' + context[0]]
+        return ['1' + context[0]]
     else:
-        return features
+        return []
 
 def gen_data(words_seq):
     for words in words_seq:
