@@ -1,12 +1,11 @@
 from graph import graph, forward_backward
 from config import lmconfig
 from utils import sparse_vector, words
+from dictionaries import dict_dict
 
-#Use FOBOS
-class SGD:
-    def __init__(self, known_words, unigram, bigram):
-        self.unigram_dict = unigram
-        self.bigram_dict = bigram
+class Esitimater:
+    def __init__(self, known_words):
+        self.dict = DictDict(known_words)
 
     def _Phi(self, y):
         sv = SparseVector({})
@@ -23,8 +22,8 @@ class SGD:
         return sv
 
     def _compute_alpha_beta(self, graph):
-        forward_backward.set_log_alpha(self.unigram_dict, self.bigram_dict, graph)
-        forward_backward.set_log_beta(self.unigram_dict, self.bigram_dict, graph)
+        forward_backward.set_log_alpha(self.dict, graph)
+        forward_backward.set_log_beta(self.dict, graph)
 
     def _logZ(self, graph):
         eos = graph.nodes_list[graph.x_length + 1][0]
@@ -32,13 +31,13 @@ class SGD:
 
     def _logP(self, node, graph):
         logP = -self._logZ(graph)
-        logP += self.unigram_dict.get(node.word)
+        logP += self.dict.get_unigram(node.word)
         logP += node.log_alpha + node.log_beta
         return logP
 
     def _logP2(self, node1, node2, graph):
         logP = -self._logZ(graph)
-        logP += self.bigram_dict.get(node1.word, node2.word)
+        logP += self.dict.get_bigram(node1.word, node2.word)
         logP += node1.log_alpha + node2.log_beta
         return logP
 
@@ -63,5 +62,4 @@ class SGD:
             logZ = self._logZ(graph)
             Phi = self._Phi(y)
             g = Phi.minusexp(self._logExpectedPhi(graph))
-            self.unigram_dict.update(g)
-            self.bigram_dict.update(g)
+            self.dict.update(g)

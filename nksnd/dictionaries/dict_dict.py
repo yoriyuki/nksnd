@@ -1,21 +1,22 @@
 import marisa_trie
-import words
+from utils import numerics
 
-class DictUnigram:
+class DictDict(Dictionary):
     def __init__(self, known_words):
         self._dict = {}
         self._normalized_count = {}
         self._known_words = known_words
 
-    def get(self, word):
-        w = words.replace_word(self._known_words, word)
-        if w in self._dict:
-            return self._dict[w]
-        else:
-            return 0
-
-    def set(self, word, weight):
-        self._dict[repalce(self._known_words, word)] = weight
+    def fobos_update(self, g):
+        self._count += 1
+        for key in g.dict.keys():
+            if key in self._normalized_count:
+                d = self._normalized_count[key]
+            else:
+                d = 0
+            w = numerics.clip(self._dict[key], lmconfig.normalization_factor * d)
+            self._dict[key] = self._dict[key] + lmconfig.eta * g.get(key)
+            self._normalized_count[k] = self._count
 
     def save(self, path):
         fmt ="<f"
