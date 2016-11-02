@@ -20,7 +20,7 @@ def is_katakana(string):
     return True
 
 def surface_pronoun(word):
-    a = word.split('/')
+    a = word.split(u'/')
     if len(a) != 2:
         print("Warning: mulformed wordkkci " + str(a))
     return (a[0], a[1])
@@ -39,7 +39,7 @@ def unknownword(word):
         length = len(p)
     else:
         length = 7
-    return '_' + kind + str(length)
+    return u'_' + kind + str(length)
 
 
 def replace_word(known_words, word):
@@ -49,26 +49,26 @@ def replace_word(known_words, word):
         return words.unknownword(word)
 
 def literal_word(string):
-    return string + '/' + string
+    return string + u'/' + string
 
 def katakana_word(string):
-    return jaconv.hira2kata(string) + '/' + string
+    return jaconv.hira2kata(string) + u'/' + string
 
 def latin_word(string):
-    return romkan.to_roma(string) + '/' + string
+    return romkan.to_roma(string) + u'/' + string
 
 def is_unknown(word):
-    return not '/' in word
+    return not u'/' in word
 
 def unknown_length(word):
     return word[2]
 
 def compose_bigram_key(word1, word2):
-    return word1 + ' ' + word2
+    return word1 + u' ' + word2
 
 def is_bigram_key(key):
-    return ' ' in key
+    return u' ' in key
 
 def decompose_bigram_key(key):
-    a = key.split(' ')
+    a = key.split(u' ')
     reeturn a[0], a[1]
