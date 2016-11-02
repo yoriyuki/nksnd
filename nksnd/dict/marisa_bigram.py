@@ -1,5 +1,5 @@
 import marisa_trie
-import words
+from utils import words
 
 class MarisaUnigram:
     def __init__(self, known_words):
@@ -8,7 +8,7 @@ class MarisaUnigram:
     def get(self, word):
         w1 = words.replace_word(self._known_words, word1)
         w2 = words.replace_word(self._known_words, word2)
-        self._dict[w1 + ' ' + w2]
+        self._dict[words.compose_bigram_key(w1, w2)]
 
     def map(self, path):
         fmt = "<f"
