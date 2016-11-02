@@ -63,4 +63,11 @@ class SGD:
             logZ = self._logZ(graph)
             Phi = self._Phi(y)
             g = Phi.minusexp(self._logExpectedPhi(graph))
-            
+            for key in g.dict.keys():
+                if not word.is_bigram_key(key):
+                    self.unigram_dict.set(key) = self.unigram_dict.get(key) + lmconfig.eta * g.get(key)
+                else:
+                    w1, w2 = words.decompose_bigram_key(key)
+                    self.bigram_dict.set(w1, w2) = self.bigram_dict.get(w1, w2) + lmconfig.eta * g.get(key)
+            self.unigram_dict.normalize()
+            self.bigram_dict.normalize()

@@ -66,6 +66,9 @@ def unknown_length(word):
 def compose_bigram_key(word1, word2):
     return word1 + ' ' + word2
 
+def is_bigram_key(key):
+    return ' ' in key
+
 def decompose_bigram_key(key):
     a = key.split(' ')
     reeturn a[0], a[1]
