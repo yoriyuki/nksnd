@@ -3,7 +3,7 @@ from config import lmconfig
 from utils import sparse_vector, words
 from dictionaries import dict_dict
 
-class Esitimater:
+class CRFEsitimater:
     def __init__(self, known_words):
         self.dict = DictDict(known_words)
 
