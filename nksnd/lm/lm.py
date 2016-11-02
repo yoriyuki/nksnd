@@ -47,14 +47,6 @@ class LM:
         self.known_words = cut_off_set(counts, lmconfig.unknownword_threshold)
         map(lambda f: f.close(), files)
 
-        print("Learning collocations...")
-        files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
-        lines = concat(files)
-        sentences = (line.split(' ') for line in lines)
-        words_seq = ([words.replace_word_word(self.known_words, word) for word in sentence] for sentence in sentences)
-        self.collocationLM.train(words_seq)
-        map(lambda f: f.close(), files)
-
         print("Training the CRF model...")
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
@@ -63,6 +55,14 @@ class LM:
         crf_estimater = CRFEsitimater(known_words)
         crf_estimater.fit(data)
         self.dict = crf_estimater.dict
+        map(lambda f: f.close(), files)
+
+        print("Learning collocations...")
+        files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
+        lines = concat(files)
+        sentences = (line.split(' ') for line in lines)
+        words_seq = ([words.replace_word_word(self.known_words, word) for word in sentence] for sentence in sentences)
+        self.collocationLM.train(words_seq)
         map(lambda f: f.close(), files)
 
     def score(self, sentence):
