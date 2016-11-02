@@ -56,7 +56,6 @@ def katakana_word(string):
 
 def latin_word(string):
     return romkan.to_roma(string) + '/' + string
-<<<<<<< HEAD
 
 def is_unknown(word):
     return not '/' in word
@@ -70,5 +69,3 @@ def compose_bigram_key(word1, word2):
 def decompose_bigram_key(key):
     a = key.split(' ')
     reeturn a[0], a[1]
-=======
->>>>>>> parent of 0c7bd65... Add pronounciation of the outcome to features
