@@ -81,11 +81,12 @@ class LM:
         self.dict.save(path)
 
     def load(self, path):
-        print("loading known words...")
-        words_filename = os.path.join(path, 'known_words')
-        self.known_words = marisa_trie.Trie.mmap(words_filename)
-        print("loading collocation paramaters...")
-        self.collocationLM.load(path)
-        print("loading the CRF model...")
-        self.dict = MarisaDict(self.known_words)
-        self.dict.mmap(path)
+        pass
+        # print("loading known words...")
+        # words_filename = os.path.join(path, 'known_words')
+        # self.known_words = marisa_trie.Trie.mmap(words_filename)
+        # print("loading collocation paramaters...")
+        # self.collocationLM.load(path)
+        # print("loading the CRF model...")
+        # self.dict = MarisaDict(self.known_words)
+        # self.dict.mmap(path)
