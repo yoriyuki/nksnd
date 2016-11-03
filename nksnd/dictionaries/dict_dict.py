@@ -53,7 +53,7 @@ class DictDict(dictionary.Dictionary):
                 self._cost[key] = w
             self._normalized_count[key] = self._count
 
-    def _fobos_normalize(self):
+    def fobos_normalize(self):
         for key in self._cost:
             w = numerics.clip(self._cost[key], lmconfig.normalization_factor * (self.count - self._normalized_count[key]))
             if w == 0:

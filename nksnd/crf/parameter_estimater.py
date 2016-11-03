@@ -64,3 +64,4 @@ class CRFEsitimater:
             Phi = self._Phi(y)
             g = Phi.minusexp(self._logExpectedPhi(graph))
             self.dict.fobos_update(g)
+        self.dict.fobos_normalize()
