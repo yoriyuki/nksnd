@@ -43,6 +43,27 @@ def unknownword(word):
         length = 7
     return u'_' + kind + unicode(str(length))
 
+def katakana_unknown_word(len):
+    if len(p) <= 6:
+        length = len(p)
+    else:
+        length = 7
+    return u'_' + u'K' + unicode(str(length))
+
+def hiragana_unknown_word(len):
+    if len(p) <= 6:
+        length = len(p)
+    else:
+        length = 7
+    return u'_' + u'H' + unicode(str(length))
+
+def other_unknown_word(len):
+    if len(p) <= 6:
+        length = len(p)
+    else:
+        length = 7
+    return u'_' + u'O' + unicode(str(length))
+
 
 def replace_word(known_words, word):
     if word in known_words:
@@ -50,17 +71,20 @@ def replace_word(known_words, word):
     else:
         return unknownword(word)
 
-def literal_word(string):
-    return string + u'/' + string
+def literal(string):
+    return string
 
-def katakana_word(string):
-    return jaconv.hira2kata(string) + u'/' + string
+def katakana(string):
+    return jaconv.hira2kata(string)
 
-def latin_word(string):
-    return romkan.to_roma(string) + u'/' + string
+def latin(string):
+    return romkan.to_roma(string)
 
 def is_unknown(word):
     return not u'/' in word
+
+def is_word(key):
+    return not (is_unknown(word) or is_bigram_key(key))
 
 def unknown_length(word):
     return word[2]
