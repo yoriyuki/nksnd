@@ -84,7 +84,7 @@ def is_unknown(word):
     return not u'/' in word
 
 def is_word(key):
-    return not (is_unknown(word) or is_bigram_key(key))
+    return not (is_unknown(key) or is_bigram_key(key))
 
 def unknown_length(word):
     return word[2]

@@ -1,4 +1,6 @@
 import itertools
+import os
+import struct
 import marisa_trie
 from utils import numerics, words
 from dictionaries import dictionary
@@ -54,21 +56,21 @@ class DictDict():
             self._updated_count[key] = self._count
 
     def fobos_regularize(self):
-        for key in self._cost:
-            w = numerics.clip(self._cost[key], lmconfig.normalization_factor * (self.count - self._updated_count[key]))
+        for key in self._cost.keys():
+            w = numerics.clip(self._cost[key], lmconfig.normalization_factor * (self._count - self._updated_count[key]))
             if w == 0 and key in self._cost:
                 del(self._cost[key])
             else:
                 self._cost[key] = w
 
     def save(self, path):
-        dictionary_with_cost = [(p, (word, self._cost[word])) for p, word in self._dict.items]
+        dictionary_with_cost = [(p, (word, self._cost[word])) for p, word in self._dict.items()]
         dict_trie = marisa_trie.RecordTrie('<sf', dictionary_with_cost)
         dict_filename = os.path.join(path, 'dictionary')
         dict_trie.save(dict_filename)
 
-        costs = ((key, cost) for (key, cost) in self._cost.iteritems if not words.is_word(key))
-        bytesitems = ((key, struct.pack('<f', v)) for key, costs in costs)
+        costs = ((key, cost) for (key, cost) in self._cost.iteritems() if not words.is_word(key))
+        bytesitems = ((key, struct.pack('<f', cost)) for key, cost in costs)
         cost_trie = marisa_trie.BytesTrie(bytesitems)
         costs_filename = os.path.join(path, 'costs')
         cost_trie.save(costs_filename)
