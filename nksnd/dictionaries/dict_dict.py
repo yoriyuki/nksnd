@@ -1,18 +1,18 @@
 import itertools
 import marisa_trie
-from utils import numerics
+from utils import numerics, words
 from dictionaries import dictionary
 from config import lmconfig
 
-class DictDict(dictionary.Dictionary):
+class DictDict():
     def __init__(self, known_words):
         self._cost = {}
         self._updated_count = {}
         self._count = 0
         dictionary = {}
         for word in known_words:
-            s, p = surface_pronoun(word)
-            dictionary[p] = s.encode('utf-8')
+            s, p = words.surface_pronoun(word)
+            dictionary[p] = word.encode('utf-8')
         self._dict = marisa_trie.BytesTrie(dictionary.iteritems())
 
     def _cost_get(self, key):
@@ -21,48 +21,48 @@ class DictDict(dictionary.Dictionary):
         else:
             return 0
 
-    def prefixes(self, pronoun):
+    def _dict_get(self, pronoun):
+        return [word.decode('utf-8') for word in self._dict[pronoun]]
+
+    def pronoun_prefixes(self, pronoun):
         return self._dict.prefixes(pronoun)
 
     def get_from_pronoun(self, pronoun):
-        words = self._dict[pronoun]
-        return [word, self._cost[word] for word in words]
+        words = self._dict_get(pronoun)
+        return [(word, self._cost_get(word)) for word in words]
 
-    def get_unknown_cost(self, unknown):
-        return self._cost[unknown]
+    def get_unknownword_cost(self, unknown):
+        return self._cost_get(unknown)
 
     def get_bigram_cost(self, word1, word2):
-        k = words.compose_bigram_key(w1, w2)
-        if k in self._cost:
-            return self._cost[k]
-        else:
-            return 0
+        k = words.compose_bigram_key(word1, word2)
+        return self._cost_get(k)
 
     def fobos_update(self, g):
         self._count += 1
         for key in g.dict.keys():
             w = self._cost_get(key) + lmconfig.eta * g.get(key)
             if key in self._updated_count:
-                d = self._normalized_count[key]
+                d = self._updated_count[key]
             else:
                 d = 0
-            w = numerics.clip(w, lmconfig.normalization_factor * (self.count - d))
-            if w == 0:
-                del(self.cost, key)
+            w = numerics.clip(w, lmconfig.normalization_factor * (self._count - d))
+            if w == 0 and key in self._cost:
+                del(self._cost[key])
             else:
                 self._cost[key] = w
-            self._normalized_count[key] = self._count
+            self._updated_count[key] = self._count
 
-    def fobos_normalize(self):
+    def fobos_regularize(self):
         for key in self._cost:
-            w = numerics.clip(self._cost[key], lmconfig.normalization_factor * (self.count - self._normalized_count[key]))
-            if w == 0:
-                del(self.cost, key)
+            w = numerics.clip(self._cost[key], lmconfig.normalization_factor * (self.count - self._updated_count[key]))
+            if w == 0 and key in self._cost:
+                del(self._cost[key])
             else:
                 self._cost[key] = w
 
     def save(self, path):
-        dictionary_with_cost = [p, (word, self._cost[word]) for p, word in self._dict.items]
+        dictionary_with_cost = [(p, (word, self._cost[word])) for p, word in self._dict.items]
         dict_trie = marisa_trie.RecordTrie('<sf', dictionary_with_cost)
         dict_filename = os.path.join(path, 'dictionary')
         dict_trie.save(dict_filename)

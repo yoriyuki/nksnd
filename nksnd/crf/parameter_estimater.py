@@ -1,6 +1,6 @@
 from graph import graph as gr, forward_backward
 from config import lmconfig
-from utils import sparse_vector, words
+from utils import sparse_vector, words, numerics
 from dictionaries import dict_dict
 
 class CRFEsitimater:
@@ -32,13 +32,13 @@ class CRFEsitimater:
 
     def _logP(self, node, graph):
         logP = -self._logZ(graph)
-        logP += self.dict.get_unigram(node.word)
+        logP += node.cost
         logP += node.log_alpha + node.log_beta
         return logP
 
     def _logP2(self, node1, node2, graph):
         logP = -self._logZ(graph)
-        logP += self.dict.get_bigram(node1.word, node2.word)
+        logP += self.dict.get_bigram_cost(node1.deep, node2.deep)
         logP += node1.log_alpha + node2.log_beta
         return logP
 
@@ -48,20 +48,20 @@ class CRFEsitimater:
         for end_pos in range(graph.x_length + 2):
             for node in graph.nodes_list[end_pos]:
                 log_expected_phi = sparse_vector.SparseVector({})
-                log_expected_phi.set(node.word, self._logP(node, graph))
+                log_expected_phi.set(node.deep, self._logP(node, graph))
                 for prev_node in graph.nodes_list[node.start_pos]:
-                    bigram_key = compose_bigram_key(prev_node.word, node.word)
-                    log_expected_phi.set(bigram_key,  log_expected_phi.get(bigram_key).logsumexp(self._logP(prev_node, node)))
+                    bigram_key = words.compose_bigram_key(prev_node.deep, node.deep)
+                    log_expected_phi.set(bigram_key,  numerics.logsumexp(log_expected_phi.get(bigram_key), self._logP2(prev_node, node, graph)))
                     log_expected_phi.logsumexp(prev_node.log_expected_phi)
                 node.log_expected_phi = log_expected_phi
         return graph.nodes_list[graph.x_length + 1][0].log_expected_phi
 
     def fit(self, data):
         for x, y in data:
-            graph = gr.Graph(self.known_words, x)
+            graph = gr.Graph(self.dict, x)
             self._compute_alpha_beta(graph)
             logZ = self._logZ(graph)
             Phi = self._Phi(y)
             g = Phi.minusexp(self._logExpectedPhi(graph))
             self.dict.fobos_update(g)
-        self.dict.fobos_normalize()
+        self.dict.fobos_regularize()

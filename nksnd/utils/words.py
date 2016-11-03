@@ -43,23 +43,23 @@ def unknownword(word):
         length = 7
     return u'_' + kind + unicode(str(length))
 
-def katakana_unknown_word(len):
-    if len(p) <= 6:
-        length = len(p)
+def katakana_unknown_word(length):
+    if length <= 6:
+        length = length
     else:
         length = 7
     return u'_' + u'K' + unicode(str(length))
 
-def hiragana_unknown_word(len):
-    if len(p) <= 6:
-        length = len(p)
+def hiragana_unknown_word(length):
+    if length <= 6:
+        length = length
     else:
         length = 7
     return u'_' + u'H' + unicode(str(length))
 
-def other_unknown_word(len):
-    if len(p) <= 6:
-        length = len(p)
+def other_unknown_word(length):
+    if length <= 6:
+        length = length
     else:
         length = 7
     return u'_' + u'O' + unicode(str(length))
