@@ -17,7 +17,7 @@ class DictDict():
             dictionary[p] = word.encode('utf-8')
         self._dict = marisa_trie.BytesTrie(dictionary.iteritems())
 
-    def _cost_get(self, key):
+    def _get_cost(self, key):
         if key in self._cost:
             return self._cost[key]
         else:
@@ -31,19 +31,19 @@ class DictDict():
 
     def get_from_pronoun(self, pronoun):
         words = self._dict_get(pronoun)
-        return [(word, self._cost_get(word)) for word in words]
+        return [(word, self._get_cost(word)) for word in words]
 
     def get_unknownword_cost(self, unknown):
-        return self._cost_get(unknown)
+        return self._get_cost(unknown)
 
     def get_bigram_cost(self, word1, word2):
         k = words.compose_bigram_key(word1, word2)
-        return self._cost_get(k)
+        return self._get_cost(k)
 
     def fobos_update(self, g):
         self._count += 1
         for key in g.dict.keys():
-            w = self._cost_get(key) + lmconfig.eta * g.get(key)
+            w = self._get_cost(key) + lmconfig.eta * g.get(key)
             if key in self._updated_count:
                 d = self._updated_count[key]
             else:
@@ -64,7 +64,7 @@ class DictDict():
                 self._cost[key] = w
 
     def save(self, path):
-        dictionary_with_cost = [(p, (word, self._cost[word])) for p, word in self._dict.items()]
+        dictionary_with_cost = [(p, (word, self._get_cost(word))) for p, word in self._dict.items()]
         dict_trie = marisa_trie.RecordTrie('<sf', dictionary_with_cost)
         dict_filename = os.path.join(path, 'dictionary')
         dict_trie.save(dict_filename)
