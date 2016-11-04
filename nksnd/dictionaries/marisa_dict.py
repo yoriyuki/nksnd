@@ -1,7 +1,6 @@
 import marisa_trie
-from dictionaries import dictionary
 
-class MarisaDict(dictionary.Dictionary):
+class MarisaDict:
     def __init__(self, known_words):
         self._known_words = known_words
 

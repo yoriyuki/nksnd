@@ -3,7 +3,6 @@ import os
 import struct
 import marisa_trie
 from utils import numerics, words
-from dictionaries import dictionary
 from config import lmconfig
 
 class DictDict():
