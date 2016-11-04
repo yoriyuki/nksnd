@@ -34,7 +34,7 @@ class GenMaxEntModel:
         self.__train()
 
     def save(self, name):
-        self.__m.save(name)
+        self.__m.save(name, True)
 
     def load(self, name):
         self.__m.load(name)

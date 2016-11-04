@@ -1,1 +1,1 @@
-__all__=["collocation_lm"]
+__all__=["lm"]
