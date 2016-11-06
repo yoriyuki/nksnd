@@ -47,7 +47,7 @@ class DictDict():
                 d = self._updated_count[key]
             else:
                 d = 0
-            w = numerics.clip(w, lmconfig.normalization_factor * (self._count - d))
+            w = numerics.clip(w, lmconfig.regularization_factor * (self._count - d))
             if w == 0 and key in self._cost:
                 del(self._cost[key])
             else:
@@ -56,7 +56,7 @@ class DictDict():
 
     def fobos_regularize(self):
         for key in self._cost.keys():
-            w = numerics.clip(self._cost[key], lmconfig.normalization_factor * (self._count - self._updated_count[key]))
+            w = numerics.clip(self._cost[key], lmconfig.regularization_factor * (self._count - self._updated_count[key]))
             if w == 0 and key in self._cost:
                 del(self._cost[key])
             else:
