@@ -1,4 +1,5 @@
 import marisa_trie
+import os
 from dictionaries import dictionary
 
 class MarisaDict(dictionary.Dictionary):
@@ -8,8 +9,10 @@ class MarisaDict(dictionary.Dictionary):
     def _decode_cost(string):
         struct.unpack('<f', string)
 
-    def map(self, path):
-        dict_filename = os.path.join(path, 'dict')
-        self._dict = marisa_trie.BytesTrie(fmt).mmap(dict_filename)
+    def mmap(self, path):
+        dict_filename = os.path.join(path, 'dictionary')
+        self._dict = marisa_trie.BytesTrie()
+        self._dict.mmap(dict_filename)
         costs_filename = os.path.join(path, 'costs')
-        self._cost = marisa_trie.BytesTrie(fmt).mmap(costs_filename)
+        self._cost = marisa_trie.BytesTrie()
+        self._cost.mmap(costs_filename)

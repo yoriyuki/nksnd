@@ -25,7 +25,7 @@ def backward_a_star(dictionary, graph, n):
     while pq != [] and rest.length < n:
         cost, path = heapq.heappop(pq)
         front = path[0]
-        if front.start_pos = -1:
+        if front.start_pos == -1:
             result.push(path)
         else:
             for prev_node in graph.nodes_list[front.start_pos]:

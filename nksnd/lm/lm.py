@@ -90,5 +90,5 @@ class LM:
         print("loading collocation paramaters...")
         self.collocationLM.load(path)
         print("loading the CRF model...")
-        self.dict = MarisaDict()
+        self.dict = marisa_dict.MarisaDict()
         self.dict.mmap(path)
