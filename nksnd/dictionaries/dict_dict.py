@@ -63,13 +63,10 @@ class DictDict():
                 self._cost[key] = w
 
     def save(self, path):
-        dictionary_with_cost = [(p, (word, self._get_cost(word))) for p, word in self._dict.items()]
-        dict_trie = marisa_trie.RecordTrie('<sf', dictionary_with_cost)
         dict_filename = os.path.join(path, 'dictionary')
-        dict_trie.save(dict_filename)
+        self._dict.save(dict_filename)
 
-        costs = ((key, cost) for (key, cost) in self._cost.iteritems() if not words.is_word(key))
-        bytesitems = ((key, struct.pack('<f', cost)) for key, cost in costs)
+        bytesitems = ((key, struct.pack('<f', cost)) for key, cost in self._cost.iteritems())
         cost_trie = marisa_trie.BytesTrie(bytesitems)
         costs_filename = os.path.join(path, 'costs')
         cost_trie.save(costs_filename)
