@@ -7,6 +7,7 @@ from utils import words
 from config import lmconfig
 from crf import parameter_estimater
 from dictionaries import marisa_dict
+from graph import graph, viterbi
 
 def concat(files):
     for file in files:
@@ -68,6 +69,15 @@ class LM:
     def score(self, sentence):
         words = [words.replace_word(self.known_words, word) for word in sentence]
         return self.collocationLM.score(words)
+
+    def convert(self, pronoun):
+        gr = Graph(self.dict, pronoun)
+        viterbi.forward_dp(self.dict, gr)
+        paths = viterbi.backward_a_star(self.dict, gr, 1)
+        result = ''
+        for node in paths[0]:
+            result = result + node.surface
+        return result
 
     def save(self, path):
         print("Saving the collocation language model...")
