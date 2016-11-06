@@ -17,7 +17,7 @@ class DictDict(dictionary.Dictionary):
             dictionary[p] = word.encode('utf-8')
         self._dict = marisa_trie.BytesTrie(dictionary.iteritems())
 
-    def _decode_cost(f):
+    def _decode_cost(self, f):
         return f
 
     def fobos_update(self, g):

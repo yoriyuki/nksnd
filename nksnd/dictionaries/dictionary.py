@@ -1,5 +1,7 @@
+from utils import words
+
 class Dictionary:
-    
+
     def _get_cost(self, key):
         if key in self._cost:
             return self._decode_cost(self._cost[key])

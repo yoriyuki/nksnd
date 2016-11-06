@@ -1,12 +1,12 @@
 import heapq
 
 def forward_dp(dictionary, graph):
-    graph.node_list[0][0].f = 0
-    for i in range(1, garph.x_length + 2):
+    graph.nodes_list[0][0].f = 0
+    for i in range(1, graph.x_length + 2):
         for node in graph.nodes_list[i]:
             score = float('-inf')
             best_prev = None
-            for prev_node in graph.node_list[node.start_pos]:
+            for prev_node in graph.nodes_list[node.start_pos]:
                 bigram_cost = dictionary.get_bigram_cost(prev_node.deep, node.deep)
                 current_score = prev_node.f + bigram_cost + node.cost
                 if current_score > score:
@@ -20,18 +20,18 @@ def backward_a_star(dictionary, graph, n):
     pq = []
     eos = graph.nodes_list[graph.x_length + 1][0]
     eos.g = 0
-    heapq.heappush(pq, [eos])
+    heapq.heappush(pq, (0, [eos]))
 
-    while pq != [] and rest.length < n:
+    while pq != [] and len(result) < n:
         cost, path = heapq.heappop(pq)
         front = path[0]
         if front.start_pos == -1:
-            result.push(path)
+            result.append(path)
         else:
             for prev_node in graph.nodes_list[front.start_pos]:
                 path1 = [ prev_node ] + path
                 bigram_cost = dictionary.get_bigram_cost(prev_node.deep, front.deep)
-                prev.g = bigram_cost + front.g + cost
-                heapq.heappush(pq, (prev.f + prev.g, path1))
+                prev_node.g = bigram_cost + front.g + cost
+                heapq.heappush(pq, (prev_node.f + prev_node.g, path1))
 
     return result

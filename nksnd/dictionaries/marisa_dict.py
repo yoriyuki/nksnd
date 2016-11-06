@@ -1,13 +1,14 @@
 import marisa_trie
 import os
+import struct
 from dictionaries import dictionary
 
 class MarisaDict(dictionary.Dictionary):
     def __init__(self):
         pass
 
-    def _decode_cost(string):
-        struct.unpack('<f', string)
+    def _decode_cost(self, data):
+        return struct.unpack('<f', data[0])[0]
 
     def mmap(self, path):
         dict_filename = os.path.join(path, 'dictionary')

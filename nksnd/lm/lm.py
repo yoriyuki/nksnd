@@ -71,7 +71,7 @@ class LM:
         return self.collocationLM.score(words)
 
     def convert(self, pronoun):
-        gr = Graph(self.dict, pronoun)
+        gr = graph.Graph(self.dict, pronoun)
         viterbi.forward_dp(self.dict, gr)
         paths = viterbi.backward_a_star(self.dict, gr, 1)
         result = ''

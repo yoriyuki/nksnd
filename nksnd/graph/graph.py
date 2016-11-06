@@ -25,7 +25,7 @@ class Graph:
         self.nodes_list[0].append(BOS())
 
         for i in range(len(string)):
-            sub = string[i:-1]
+            sub = string[i:]
             prefixes = d.pronoun_prefixes(sub)
             for p in prefixes:
                 for word, cost in d.get_from_pronoun(p):
@@ -44,8 +44,8 @@ class Graph:
                             w2 = words.katakana_unknown_word(len(rest))
                             s2 = words.katakana(rest)
                             c2 = d.get_unknownword_cost(w2)
-                            self.nodes_list[j].append(Node(i, rest, s1, w1, c1))
-                            self.nodes_list[j].append(Node(i, rest, s2, w2, c2))
+                            self.nodes_list[j+1].append(Node(i, rest, s1, w1, c1))
+                            self.nodes_list[j+1].append(Node(i, rest, s2, w2, c2))
                         else:
                             w1 = words.other_unknown_word(len(rest))
                             s1 = rest
@@ -53,7 +53,7 @@ class Graph:
                             w2 = words.other_unknown_word(len(rest))
                             s2 = words.latin(rest)
                             c2 = d.get_unknownword_cost(w2)
-                            self.nodes_list[j].append(Node(i, rest, s1, w1, c1))
-                            self.nodes_list[j].append(Node(i, rest, s2, w2, c2))
+                            self.nodes_list[j+1].append(Node(i, rest, s1, w1, c1))
+                            self.nodes_list[j+1].append(Node(i, rest, s2, w2, c2))
 
         self.nodes_list[1 + len(string)].append(EOS(len(string)))
