@@ -19,6 +19,7 @@ def backward_a_star(dictionary, graph, n):
     result = []
     pq = []
     eos = graph.nodes_list[graph.x_length + 1][0]
+    eos.g = 0
     heapq.heappush(pq, [eos])
 
     while pq != [] and rest.length < n:
@@ -30,7 +31,7 @@ def backward_a_star(dictionary, graph, n):
             for prev_node in graph.nodes_list[front.start_pos]:
                 path1 = [ prev_node ] + path
                 bigram_cost = dictionary.get_bigram_cost(prev_node.deep, front.deep)
-                cost1 = bigram_cost + front.cost + cost
-                heapq.heappush(pq, (cost1, path1))
+                prev.g = bigram_cost + front.g + cost
+                heapq.heappush(pq, (prev.f + prev.g, path1))
 
     return result
