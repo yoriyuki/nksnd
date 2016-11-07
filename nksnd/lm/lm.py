@@ -3,6 +3,7 @@ import codecs
 import pickle
 import os
 import marisa_trie
+from tqdm import tqdm
 from utils import words
 from config import lmconfig
 from crf import parameter_estimater
@@ -14,15 +15,17 @@ def concat(files):
         for line in file:
             yield line
 
-def count_words(sentences):
+def count_words_and_lines(sentences):
     counts = {}
+    lines_num = 0
     for sentence in sentences:
+        lines_num += 1
         for word in sentence:
             if word in counts:
                 counts[word] += 1
             else:
                 counts[word] = 1
-    return counts
+    return counts, lines_num
 
 def cut_off_set(counts, cut_off):
     return marisa_trie.Trie((x for x in counts.keys() if counts[x] > cut_off))
@@ -44,7 +47,7 @@ class LM:
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        counts = count_words(sentences)
+        counts, lines_num = count_words_and_lines(sentences)
         self.known_words = cut_off_set(counts, lmconfig.unknownword_threshold)
         map(lambda f: f.close(), files)
 
@@ -52,7 +55,7 @@ class LM:
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        data = ((pronounciation(s), s) for s in sentences)
+        data = tqdm(((pronounciation(s), s) for s in sentences), total=lines_num)
         crf_estimater = parameter_estimater.CRFEsitimater(self.known_words)
         crf_estimater.fit(data)
         self.dict = crf_estimater.dict
