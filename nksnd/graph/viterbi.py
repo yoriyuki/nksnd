@@ -8,6 +8,7 @@ def forward_dp(dictionary, graph):
             best_prev = None
             for prev_node in graph.nodes_list[node.start_pos]:
                 bigram_cost = dictionary.get_bigram_cost(prev_node.deep, node.deep)
+                print(node.surface, node.cost, bigram_cost)
                 current_score = prev_node.f + bigram_cost + node.cost
                 if current_score > score:
                     score = current_score
@@ -31,7 +32,7 @@ def backward_a_star(dictionary, graph, n):
             for prev_node in graph.nodes_list[front.start_pos]:
                 path1 = [ prev_node ] + path
                 bigram_cost = dictionary.get_bigram_cost(prev_node.deep, front.deep)
-                prev_node.g = bigram_cost + front.g + cost
-                heapq.heappush(pq, (prev_node.f + prev_node.g, path1))
+                prev_node.g = bigram_cost + front.g - cost
+                heapq.heappush(pq, (- prev_node.f - prev_node.g, path1))
 
     return result

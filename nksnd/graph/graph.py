@@ -35,7 +35,7 @@ class Graph:
 
             if prefixes == []:
                 for j in range(i, len(string)):
-                    if d.pronoun_prefixes(string[j:-1]) != []: #slow
+                    if d.pronoun_prefixes(string[j:]) != []: #slow
                         rest = string[i:j]
                         if words.is_hiragana(rest):
                             s1 = rest

@@ -11,11 +11,8 @@ class DictDict(dictionary.Dictionary):
         self._cost = {}
         self._updated_count = {}
         self._count = 0
-        dictionary = {}
-        for word in known_words:
-            s, p = words.surface_pronoun(word)
-            dictionary[p] = word.encode('utf-8')
-        self._dict = marisa_trie.BytesTrie(dictionary.iteritems())
+        dictionary_items = ((words.surface_pronoun(word)[1], word.encode('utf-8')) for word in known_words) 
+        self._dict = marisa_trie.BytesTrie(dictionary_items)
 
     def _decode_cost(self, f):
         return f
