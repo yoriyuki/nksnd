@@ -89,10 +89,12 @@ class CRFEsitimater:
         workers = multiprocessing.Pool(parallel_config.processes)
         chunk_size = parallel_config.chunk_size * parallel_config.processes
         chunked_data = chunking(chunk_size, data)
-        with tqdm.tqdm(total=data_size/chunk_size) as pbar:
+        with tqdm.tqdm(total=data_size) as pbar:
             for chunk in chunked_data:
                 gs = workers.imap(self.gradient, chunk, parallel_config.chunk_size)
                 g = reduce(lambda g, g1: g.logsumexp(g1), gs)
                 self.dict.fobos_update(g)
-                pbar.update(1)
+                pbar.update(chunk_size)
+        workers.close()
+        workers.join()
         self.dict.fobos_regularize()
