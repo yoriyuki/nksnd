@@ -12,7 +12,7 @@ from graph import graph, viterbi
 def concat(files):
     for file in files:
         for line in file:
-            yield line
+            yield line.strip('\n')
 
 def count_words_and_lines(sentences):
     counts = {}

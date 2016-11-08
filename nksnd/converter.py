@@ -8,4 +8,5 @@ lm = lm.LM()
 lm.load('../data/')
 
 for line in stdin:
+    line.strip('\n ')
     print(lm.convert(line))
