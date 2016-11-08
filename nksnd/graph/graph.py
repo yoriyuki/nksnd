@@ -34,26 +34,32 @@ class Graph:
                     self.nodes_list[i+len(p)].append(n)
 
             if prefixes == []:
-                for j in range(i, len(string)):
+                j = len(string)
+                rest = string[i:]
+                for k in range(i, len(string)):
                     if d.pronoun_prefixes(string[j:]) != []: #slow
-                        rest = string[i:j]
-                        if words.is_hiragana(rest):
-                            s1 = rest
-                            w1 = words.hiragana_unknown_word(len(rest))
-                            c1 = d.get_unknownword_cost(w1)
-                            w2 = words.katakana_unknown_word(len(rest))
-                            s2 = words.katakana(rest)
-                            c2 = d.get_unknownword_cost(w2)
-                            self.nodes_list[j+1].append(Node(i, rest, s1, w1, c1))
-                            self.nodes_list[j+1].append(Node(i, rest, s2, w2, c2))
-                        else:
-                            w1 = words.other_unknown_word(len(rest))
-                            s1 = rest
-                            c1 = d.get_unknownword_cost(w1)
-                            w2 = words.other_unknown_word(len(rest))
-                            s2 = words.latin(rest)
-                            c2 = d.get_unknownword_cost(w2)
-                            self.nodes_list[j+1].append(Node(i, rest, s1, w1, c1))
-                            self.nodes_list[j+1].append(Node(i, rest, s2, w2, c2))
+                        j = k
+                        rest = string[i:k]
+                        break
+                    else:
+                        pass
+                if words.is_hiragana(rest):
+                    s1 = rest
+                    w1 = words.hiragana_unknown_word(len(rest))
+                    c1 = d.get_unknownword_cost(w1)
+                    w2 = words.katakana_unknown_word(len(rest))
+                    s2 = words.katakana(rest)
+                    c2 = d.get_unknownword_cost(w2)
+                    self.nodes_list[j].append(Node(i, rest, s1, w1, c1))
+                    self.nodes_list[j].append(Node(i, rest, s2, w2, c2))
+                else:
+                    w1 = words.other_unknown_word(len(rest))
+                    s1 = rest
+                    c1 = d.get_unknownword_cost(w1)
+                    w2 = words.other_unknown_word(len(rest))
+                    s2 = words.latin(rest)
+                    c2 = d.get_unknownword_cost(w2)
+                    self.nodes_list[j].append(Node(i, rest, s1, w1, c1))
+                    self.nodes_list[j].append(Node(i, rest, s2, w2, c2))
 
         self.nodes_list[1 + len(string)].append(EOS(len(string)))
