@@ -3,7 +3,6 @@ import codecs
 import pickle
 import os
 import marisa_trie
-from tqdm import tqdm
 from utils import words
 from config import lmconfig
 from crf import parameter_estimater
@@ -55,9 +54,9 @@ class LM:
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        data = tqdm(((pronounciation(s), s) for s in sentences), total=lines_num)
+        data = ((pronounciation(s), s) for s in sentences)
         crf_estimater = parameter_estimater.CRFEsitimater(self.known_words)
-        crf_estimater.fit(data)
+        crf_estimater.fit(data, lines_num)
         self.dict = crf_estimater.dict
         map(lambda f: f.close(), files)
 
