@@ -7,13 +7,13 @@ class MarisaDict(dictionary.Dictionary):
     def __init__(self):
         pass
 
-    def _decode_cost(self, data):
+    def _decode_weight(self, data):
         return struct.unpack('<f', data[0])[0]
 
     def mmap(self, path):
         dict_filename = os.path.join(path, 'dictionary')
         self._dict = marisa_trie.BytesTrie()
         self._dict.mmap(dict_filename)
-        costs_filename = os.path.join(path, 'costs')
-        self._cost = marisa_trie.BytesTrie()
-        self._cost.mmap(costs_filename)
+        weights_filename = os.path.join(path, 'weights')
+        self._weight = marisa_trie.BytesTrie()
+        self._weight.mmap(weights_filename)

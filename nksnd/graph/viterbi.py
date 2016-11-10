@@ -1,4 +1,3 @@
-from __future__ import print_function
 import heapq
 import copy
 import codecs, sys
@@ -11,9 +10,9 @@ def forward_dp(dictionary, graph):
             score = float('-inf')
             best_prev = None
             for prev_node in graph.nodes_list[node.start_pos]:
-                bigram_cost = dictionary.get_bigram_cost(prev_node.deep, node.deep)
-#                print(node.surface, node.cost, bigram_cost)
-                current_score = prev_node.f + bigram_cost + node.cost
+                bigram_weight = dictionary.get_bigram_weight(prev_node.deep, node.deep)
+#                print(node.surface, node.weight, bigram_weight)
+                current_score = prev_node.f + bigram_weight + node.weight
                 if current_score > score:
                     score = current_score
                     best_prev = prev_node
@@ -33,8 +32,8 @@ def backward_a_star(dictionary, graph, n):
             result.append(front)
         else:
             for prev_node in graph.nodes_list[front.start_pos]:
-                bigram_cost = - dictionary.get_bigram_cost(prev_node.deep, front.deep)
-                prev_node.g = bigram_cost + front.g - cost
+                bigram_weight = dictionary.get_bigram_weight(prev_node.deep, front.deep)
+                prev_node.g = bigram_weight + front.g + front.weight
                 new_front = copy.copy(prev_node)
     #            print(new_front.surface, new_front.g, new_front.f, file=stdout)
                 new_front.next = front

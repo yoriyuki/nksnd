@@ -1,10 +1,10 @@
 from utils import words
 
 class Dictionary:
-    #FIXME cost is misnomer.
-    def _get_cost(self, key):
-        if key in self._cost:
-            return self._decode_cost(self._cost[key])
+    #FIXME weight is misnomer.
+    def _get_weight(self, key):
+        if key in self._weight:
+            return self._decode_weight(self._weight[key])
         else:
             return 0
 
@@ -16,11 +16,11 @@ class Dictionary:
 
     def get_from_pronoun(self, pronoun):
         words = self._dict_get(pronoun)
-        return [(word, self._get_cost(word)) for word in words]
+        return [(word, self._get_weight(word)) for word in words]
 
-    def get_unknownword_cost(self, unknown):
-        return self._get_cost(unknown)
+    def get_unknownword_weight(self, unknown):
+        return self._get_weight(unknown)
 
-    def get_bigram_cost(self, word1, word2):
+    def get_bigram_weight(self, word1, word2):
         k = words.compose_bigram_key(word1, word2)
-        return self._get_cost(k)
+        return self._get_weight(k)
