@@ -1,4 +1,8 @@
+from __future__ import print_function
 import heapq
+import copy
+import codecs, sys
+stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 def forward_dp(dictionary, graph):
     graph.nodes_list[0][0].f = 0
@@ -8,7 +12,7 @@ def forward_dp(dictionary, graph):
             best_prev = None
             for prev_node in graph.nodes_list[node.start_pos]:
                 bigram_cost = dictionary.get_bigram_cost(prev_node.deep, node.deep)
-                print(node.surface, node.cost, bigram_cost)
+#                print(node.surface, node.cost, bigram_cost)
                 current_score = prev_node.f + bigram_cost + node.cost
                 if current_score > score:
                     score = current_score
@@ -21,18 +25,27 @@ def backward_a_star(dictionary, graph, n):
     pq = []
     eos = graph.nodes_list[graph.x_length + 1][0]
     eos.g = 0
-    heapq.heappush(pq, (0, [eos]))
+    heapq.heappush(pq, (0, eos))
 
     while pq != [] and len(result) < n:
-        cost, path = heapq.heappop(pq)
-        front = path[0]
+        cost, front = heapq.heappop(pq)
         if front.start_pos == -1:
-            result.append(path)
+            result.append(front)
         else:
             for prev_node in graph.nodes_list[front.start_pos]:
-                path1 = [ prev_node ] + path
-                bigram_cost = dictionary.get_bigram_cost(prev_node.deep, front.deep)
+                bigram_cost = - dictionary.get_bigram_cost(prev_node.deep, front.deep)
                 prev_node.g = bigram_cost + front.g - cost
-                heapq.heappush(pq, (- prev_node.f - prev_node.g, path1))
+                new_front = copy.copy(prev_node)
+    #            print(new_front.surface, new_front.g, new_front.f, file=stdout)
+                new_front.next = front
+                heapq.heappush(pq, (- prev_node.f - prev_node.g, new_front))
 
-    return result
+    n_best = []
+    for node in result:
+        nodes = []
+        while node != eos:
+            nodes.append(node)
+            node = node.next
+        n_best.append(nodes)
+
+    return n_best
