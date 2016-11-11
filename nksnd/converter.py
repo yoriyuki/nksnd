@@ -1,3 +1,4 @@
+from __future__ import print_function
 from lm import lm
 import sys
 import codecs
@@ -8,5 +9,4 @@ lm = lm.LM()
 lm.load('../data/')
 
 for line in stdin:
-    line.strip('\n ')
-    print(lm.convert(line))
+    print(lm.convert(line), file=stdout)

@@ -53,13 +53,13 @@ class CRFEsitimater:
 
     def _logP(self, node, graph):
         logP = -self._logZ(graph)
-        logP += node.cost
+        logP += node.weight
         logP += node.log_alpha + node.log_beta
         return logP
 
     def _logP2(self, node1, node2, graph):
         logP = -self._logZ(graph)
-        logP += self.dict.get_bigram_cost(node1.deep, node2.deep)
+        logP += self.dict.get_bigram_weight(node1.deep, node2.deep)
         logP += node1.log_alpha + node2.log_beta
         return logP
 
