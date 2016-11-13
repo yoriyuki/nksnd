@@ -8,10 +8,10 @@ Currently, nksnd is under development and not usable as a conversion engine.  Th
 ## Download
 Clone from github.  There is no master branch.  Currently there are two integration branches:
 
-- nksnd-urawa
-- nksnd-warabi
+- nksnd-okegawa
+- nksnd-ageo
 
-nksnd-urawa is new.
+nksnd-ageo is python version while nksnd-okegawa is (to be) a C++ implementation.
 
 To train the engine, you also need a corpus which consists of morphemes separated by white spaces.
 
