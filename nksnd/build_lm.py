@@ -1,5 +1,5 @@
 from lm import lm
-from config import lmconfig
+from config import lmconfig, parallel_config
 import argparse
 import os
 
@@ -23,6 +23,12 @@ if __name__ == "__main__":
     parser.add_argument('--crf_fobos_c', type=float,
         default = lmconfig.regularization_factor,
         help='L1 rugularization constant of CRF fobos learning algorithm')
+    parser.add_argument('--crf_processes', type=int,
+        default = parallel_config.processes,
+        help='number of processes used for learning CRF')
+    parser.add_argument('--crf_chunk', type=float,
+        default = parallel_config.chunk_size,
+        help='size of chunk processed sent to each learning process')
     parser.add_argument('inputs', nargs='+',
         help='corpus')
     args = parser.parse_args()
@@ -31,6 +37,8 @@ if __name__ == "__main__":
     lmconfig.unknownword_threshold = args.unknownword_threshold
     lmconfig.eta = args.crf_fobos_eta
     lmconfig.regularization_factor = args.crf_fobos_c
+    parallel_config.processes = args.crf_processes
+    parallel_config.chunk_size = args.crf_chunk
     inputs = args.inputs
 
     model = lm.LM()

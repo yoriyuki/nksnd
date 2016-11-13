@@ -1,1 +1,1 @@
-__all__=["graph", "forward_backward"]
+__all__=["graph", "forward_backward", "viterbi"]
