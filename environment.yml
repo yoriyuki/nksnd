@@ -14,8 +14,6 @@ dependencies:
 - pip:
   - jaconv==0.2.0
   - marisa-trie==0.7.2
-  - maxent-version==devel
   - romkan==0.2.1
   - tqdm==4.9.0
 prefix: /Users/yoriyuki/anaconda/envs/nksnd-ageo
-
