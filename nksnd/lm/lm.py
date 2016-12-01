@@ -72,14 +72,11 @@ class LM:
         words = [words.replace_word(self.known_words, word) for word in sentence]
         return self.collocationLM.score(words)
 
-    def convert(self, pronoun):
+    def n_candidates(self, pronoun, n):
         gr = graph.Graph(self.dict, pronoun)
         viterbi.forward_dp(self.dict, gr)
-        paths = viterbi.backward_a_star(self.dict, gr, 1)
-        result = ''
-        for node in paths[0]:
-            result = result + node.surface
-        return result
+        paths = viterbi.backward_a_star(self.dict, gr, n)
+        return paths
 
     def save(self, path):
         print("Saving the collocation language model...")
