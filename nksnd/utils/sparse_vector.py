@@ -24,6 +24,7 @@ class SparseVector:
             self.set(key, self.get(key) - math.exp(sv.get(key)))
         return self
 
-    def sum(self, sv):
+    def setsum(self, sv):
         for key in sv.dict:
             self.set(key, self.get(key) + sv.get(key))
+        return self

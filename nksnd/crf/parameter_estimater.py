@@ -92,7 +92,7 @@ class CRFEsitimater:
         with tqdm.tqdm(total=data_size) as pbar:
             for chunk in chunked_data:
                 gs = workers.imap(self.gradient, chunk, parallel_config.chunk_size)
-                g = reduce(lambda g, g1: g.sum, gs)
+                g = reduce(lambda g, g1: g.setsum(g1), gs)
                 self.dict.fobos_update(g)
                 pbar.update(chunk_size)
         workers.close()
