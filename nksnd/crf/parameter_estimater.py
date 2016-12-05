@@ -36,7 +36,7 @@ class CRFEsitimater:
         for word in y:
             bigram_key = words.compose_bigram_key(prev_word, word)
             sv.set(bigram_key, sv.get(bigram_key) + 1)
-            (word, sv.get(word) + 1)
+            sv.set(word, sv.get(word) + 1)
             prev_word = word
         bigram_key = words.compose_bigram_key(prev_word, gr.EOS.word)
         sv.set(bigram_key, sv.get(bigram_key) + 1)

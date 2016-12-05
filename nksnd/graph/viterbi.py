@@ -13,7 +13,7 @@ def forward_dp(dictionary, graph):
             for prev_node in graph.nodes_list[node.start_pos]:
                 bigram_weight = dictionary.get_bigram_weight(prev_node.deep, node.deep)
 #                print(node.surface, node.weight, bigram_weight)
-                current_score = prev_node.f + bigram_weight + node.weight
+                current_score = prev_node.f + node.weight + bigram_weight
                 if current_score > score:
                     score = current_score
                     best_prev = prev_node
@@ -34,7 +34,7 @@ def backward_a_star(dictionary, graph, n):
         else:
             for prev_node in graph.nodes_list[front.start_pos]:
                 bigram_weight = dictionary.get_bigram_weight(prev_node.deep, front.deep)
-                prev_node.g = bigram_weight + front.g + front.weight
+                prev_node.g = front.g + front.weight + bigram_weight
                 new_front = copy.copy(prev_node)
     #            print(new_front.surface, new_front.g, new_front.f, file=stdout)
                 new_front.next = front
