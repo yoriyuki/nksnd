@@ -37,7 +37,7 @@ class Graph:
                 j = len(string)
                 rest = string[i:]
                 for k in range(i, len(string)):
-                    if d.pronoun_prefixes(string[j:]) != []: #slow
+                    if d.pronoun_prefixes(string[k:]) != []: #slow
                         j = k
                         rest = string[i:k]
                         break
