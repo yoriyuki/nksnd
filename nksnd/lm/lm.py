@@ -1,7 +1,9 @@
+from __future__ import print_function
 import collocation_lm
 import codecs
 import pickle
 import os
+import sys
 import marisa_trie
 from utils import words
 from config import lmconfig
@@ -79,15 +81,15 @@ class LM:
         return paths
 
     def save(self, path):
-        print("Saving the collocation language model...")
+        print("Saving the collocation language model...", file=sys.stderr)
         self.collocationLM.save(path)
 
-        print("Saving the CRF model...")
+        print("Saving the CRF model...", file=sys.stderr)
         self.dict.save(path)
 
     def load(self, path):
-        print("loading collocation paramaters...")
+        print("loading collocation paramaters...", file=sys.stderr)
         self.collocationLM.load(path)
-        print("loading the CRF model...")
+        print("loading the CRF model...", file=sys.stderr)
         self.dict = marisa_dict.MarisaDict()
         self.dict.mmap(path)
