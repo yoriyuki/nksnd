@@ -6,7 +6,7 @@ import os
 import sys
 import marisa_trie
 from utils import words
-from config import lmconfig
+from config import lmconfig, conversion_config
 from crf import parameter_estimater
 from dictionaries import marisa_dict
 from graph import graph, viterbi
@@ -70,15 +70,20 @@ class LM:
         self.collocationLM.train(words_seq)
         map(lambda f: f.close(), files)
 
-    def score(self, sentence):
-        words = [words.replace_word(self.known_words, word) for word in sentence]
-        return self.collocationLM.score(words)
+    def score(self, path):
+        deep_words = [node.deep for node in path]
+        return self.collocationLM.score(deep_words)
 
     def n_candidates(self, pronoun, n):
         gr = graph.Graph(self.dict, pronoun)
         viterbi.forward_dp(self.dict, gr)
         paths = viterbi.backward_a_star(self.dict, gr, n)
+        paths = [path[1:-1] for path in paths]
         return paths
+
+    def convert(self, pronoun):
+        paths = self.n_candidates(pronoun, conversion_config.candidates_num)
+        return sorted(paths, key=lambda path: self.score(path), reverse=True)[0]
 
     def save(self, path):
         print("Saving the collocation language model...", file=sys.stderr)

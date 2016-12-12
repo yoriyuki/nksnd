@@ -1,1 +1,1 @@
-__all__ = ['lmconfig']
+__all__ = ['lmconfig', 'parallel_config.py', 'conversion_config.py']

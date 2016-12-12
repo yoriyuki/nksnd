@@ -28,6 +28,7 @@ if __name__ == "__main__":
         description='Evaluate conversion results')
     parser.add_argument('originals',help='original texts')
     parser.add_argument('converted_texts',help='converted texts')
+    parser.add_argument('--verbose', '-v', type=bool, help='verbose output')
     args = parser.parse_args()
 
     lcs_sum = 0
@@ -43,7 +44,8 @@ if __name__ == "__main__":
                 orig.strip(' \n')
                 conv.strip(' \n')
                 lcs_len = lcs(orig, conv)
-                print(u'\"{}\", \"{}\", {}'.format(orig, conv, lcs_len), file=stdout)
+                if args.verbose:
+                    print(u'\"{}\", \"{}\", {}'.format(orig, conv, lcs_len), file=stdout)
                 lcs_sum += lcs_len
                 conv_sum += len(conv)
                 orig_sum += len(orig)
@@ -51,4 +53,7 @@ if __name__ == "__main__":
             precision = lcs_sum/float(conv_sum)
             recall = lcs_sum/float(orig_sum)
             f_value = 2 * precision * recall / (precision + recall)
-            print(u',,,{},{},{}'.format(precision, recall, f_value), file=stdout)
+            if args.verbose:
+                print(u',,,{},{},{}'.format(precision, recall, f_value), file=stdout)
+            else:
+                print(u'{},{},{}'.format(precision, recall, f_value), file=stdout)
