@@ -78,7 +78,6 @@ class LM:
         gr = graph.Graph(self.dict, pronoun)
         viterbi.forward_dp(self.dict, gr)
         paths = viterbi.backward_a_star(self.dict, gr, n)
-        paths = [path[1:-1] for path in paths]
         return paths
 
     def convert(self, pronoun):

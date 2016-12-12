@@ -46,6 +46,6 @@ def backward_a_star(dictionary, graph, n):
         while node != eos:
             nodes.append(node)
             node = node.next
-        n_best.append(nodes)
+        n_best.append(nodes[1:])
 
     return n_best
