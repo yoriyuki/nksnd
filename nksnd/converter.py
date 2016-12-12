@@ -1,4 +1,5 @@
 from __future__ import print_function
+from config import conversion_config
 from lm import lm
 import sys
 import codecs
@@ -14,17 +15,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Convert kana')
     parser.add_argument('-n',
         default=1, type=int,
-        help='number of candidates')
+        help='number of candidates for reranking')
     parser.add_argument('-d', default=False, type=bool, help='debug mode')
     args = parser.parse_args()
+    conversion_config.candidates_num = args.n
 
     for line in stdin:
         line = line.strip('\n')
-        paths = lm.n_candidates(line, args.n)
-        for path in paths:
-            if args.d:
-                output = u' '.join(['(' + node.deep + "," + unicode(node.weight) + ')' for node in path])
-                print(output, file=stdout)
-            else:
-                output = u''.join([node.surface for node in path])
-                print(output, file=stdout)
+        path = lm.convert(line)
+        if args.d:
+            output = u' '.join(['(' + node.deep + "," + unicode(node.weight) + ')' for node in path])
+            print(output, file=stdout)
+        else:
+            output = u''.join([node.surface for node in path])
+            print(output, file=stdout)
