@@ -2,6 +2,7 @@ import tqdm
 import copy_reg
 import types
 import multiprocessing
+import gc
 from graph import graph as gr, forward_backward
 from config import lmconfig, parallel_config
 from utils import sparse_vector, words, numerics
@@ -86,15 +87,15 @@ class CRFEsitimater:
         return Phi.minusexp(self._logExpectedPhi(graph))
 
     def fit(self, data, data_size):
-        workers = multiprocessing.Pool(parallel_config.processes)
         chunk_size = parallel_config.chunk_size * parallel_config.processes
         chunked_data = chunking(chunk_size, data)
         with tqdm.tqdm(total=data_size) as pbar:
             for chunk in chunked_data:
+                workers = multiprocessing.Pool(parallel_config.processes)
                 gs = workers.imap(self.gradient, chunk, parallel_config.chunk_size)
                 g = reduce(lambda g, g1: g.setsum(g1), gs)
+                workers.close()
+                workers.join()
                 self.dict.fobos_update(g)
                 pbar.update(chunk_size)
-        workers.close()
-        workers.join()
         self.dict.fobos_regularize()
