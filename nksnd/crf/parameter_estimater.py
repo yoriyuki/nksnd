@@ -96,6 +96,7 @@ class CRFEsitimater:
                 gs = workers.imap(self.gradient, chunk, parallel_config.chunk_size)
                 g = reduce(lambda g, g1: g.setsum(g1), gs)
                 workers.close()
+                workers.terminate()
                 workers.join()
                 self.dict.fobos_update(g)
                 pbar.update(chunk_size)
