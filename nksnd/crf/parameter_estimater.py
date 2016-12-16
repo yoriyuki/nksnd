@@ -79,6 +79,7 @@ class CRFEsitimater:
         return graph.nodes_list[graph.x_length + 1][0].log_expected_phi
 
     def gradient(self, pair):
+        gc.collect()
         x, y = pair
         graph = gr.Graph(self.dict, x)
         self._compute_alpha_beta(graph)
