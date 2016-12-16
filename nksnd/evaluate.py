@@ -34,6 +34,8 @@ if __name__ == "__main__":
     lcs_sum = 0
     conv_sum = 0
     orig_sum = 0
+    sentences = 0
+    correct_sentences = 0
 
     with open(args.originals, 'r') as originals:
         with open(args.converted_texts, 'r') as converted_texts:
@@ -43,6 +45,9 @@ if __name__ == "__main__":
             for orig, conv in zip(origs, convs):
                 orig.strip(' \n')
                 conv.strip(' \n')
+                sentences += 1
+                if orig == conc:
+                    correct_sentences += 1
                 lcs_len = lcs(orig, conv)
                 if args.verbose:
                     print(u'\"{}\", \"{}\", {}'.format(orig, conv, lcs_len), file=stdout)
@@ -53,6 +58,7 @@ if __name__ == "__main__":
             precision = lcs_sum/float(conv_sum)
             recall = lcs_sum/float(orig_sum)
             f_value = 2 * precision * recall / (precision + recall)
+            sentence_accuracy = float(correct_sentence) / sentences
             if args.verbose:
                 print(u',,,{},{},{}'.format(precision, recall, f_value), file=stdout)
             else:
