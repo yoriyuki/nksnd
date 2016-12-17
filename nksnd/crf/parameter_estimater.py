@@ -85,19 +85,22 @@ class CRFEsitimater:
         self._compute_alpha_beta(graph)
         logZ = self._logZ(graph)
         Phi = self._Phi(y)
-        return Phi.minusexp(self._logExpectedPhi(graph))
+        Phi.minusexp(self._logExpectedPhi(graph))
+        del graph
+        del logZ
+        return Phi
 
     def fit(self, data, data_size):
         chunk_size = parallel_config.chunk_size * parallel_config.processes
         chunked_data = chunking(chunk_size, data)
         with tqdm.tqdm(total=data_size) as pbar:
+            workers = multiprocessing.Pool(parallel_config.processes)
             for chunk in chunked_data:
-                workers = multiprocessing.Pool(parallel_config.processes)
                 gs = workers.imap(self.gradient, chunk, parallel_config.chunk_size)
                 g = reduce(lambda g, g1: g.setsum(g1), gs)
-                workers.close()
-                workers.terminate()
-                workers.join()
                 self.dict.fobos_update(g)
                 pbar.update(chunk_size)
+            workers.close()
+            workers.terminate()
+            workers.join()
         self.dict.fobos_regularize()
