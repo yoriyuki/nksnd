@@ -94,7 +94,7 @@ class CRFEsitimater:
         chunk_size = parallel_config.chunk_size * parallel_config.processes
         chunked_data = chunking(chunk_size, data)
         with tqdm.tqdm(total=data_size) as pbar:
-            workers = multiprocessing.Pool(parallel_config.processes, maxtasksperchild=parallel_config.chunk_size)
+            workers = multiprocessing.Pool(parallel_config.processes, maxtasksperchild=1)
             for chunk in chunked_data:
                 gs = workers.imap_unordered(self.gradient, chunk, parallel_config.chunk_size)
                 g = reduce(lambda g, g1: g.setsum(g1), gs)
