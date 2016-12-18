@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument('--crf_processes', type=int,
         default = parallel_config.processes,
         help='number of processes used for learning CRF')
-    parser.add_argument('--crf_chunk', type=float,
+    parser.add_argument('--crf_chunk', type=int,
         default = parallel_config.chunk_size,
         help='size of chunk processed sent to each learning process')
     parser.add_argument('inputs', nargs='+',
