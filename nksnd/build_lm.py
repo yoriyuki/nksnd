@@ -1,5 +1,5 @@
 from lm import lm
-from config import lmconfig, parallel_config
+from config import lmconfig, parallel_config, learn_config
 import argparse
 import os
 
@@ -29,6 +29,9 @@ if __name__ == "__main__":
     parser.add_argument('--crf_chunk', type=int,
         default = parallel_config.chunk_size,
         help='size of chunk processed sent to each learning process')
+    parser.add_argument('--skip_collocation', type=bool,
+        default = False,
+        help='Learn collocation?')
     parser.add_argument('inputs', nargs='+',
         help='corpus')
     args = parser.parse_args()
@@ -39,6 +42,7 @@ if __name__ == "__main__":
     lmconfig.regularization_factor = args.crf_fobos_c
     parallel_config.processes = args.crf_processes
     parallel_config.chunk_size = args.crf_chunk
+    learn_config.learn_collocation = not args.skip_collocation
     inputs = args.inputs
 
     model = lm.LM()
