@@ -60,6 +60,6 @@ if __name__ == "__main__":
             f_value = 2 * precision * recall / (precision + recall)
             sentence_accuracy = float(correct_sentence) / sentences
             if args.verbose:
-                print(u',,,{},{},{}'.format(precision, recall, f_value), file=stdout)
+                print(u',,,{},{},{},{}'.format(precision, recall, f_value, sentence_accuracy), file=stdout)
             else:
-                print(u'{},{},{}'.format(precision, recall, f_value), file=stdout)
+                print(u'{},{},{},{}'.format(precision, recall, f_value, sentence_accuracy), file=stdout)

@@ -24,6 +24,10 @@ if __name__ == "__main__":
         line = line.strip('\n')
         path = lm.convert(line)
         if args.d:
+            viterbis = lm.n_candidates(line, args.n)
+            for viterbi in viterbis:
+                output = u' '.join(['(' + node.deep + "," + unicode(node.weight) + ')' for node in viterbi])
+                print(output, file=stdout)
             output = u' '.join(['(' + node.deep + "," + unicode(node.weight) + ')' for node in path])
             print(output, file=stdout)
         else:
