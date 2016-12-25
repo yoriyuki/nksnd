@@ -60,7 +60,7 @@ class MarisaDict:
 
     def _get_unigram_weight(self, word):
         n, t = self._get_unigram_stat(word)
-        return math.log((n + slm_config.additive_smoothing) / (self.word_count + slm_config.additive_smoothing * self.vocaburaly_size))
+        return math.log((n + slm_config.additive_smoothing) / (self.word_count + slm_config.additive_smoothing))
 
     def pronoun_prefixes(self, pronoun):
         return self._dict.prefixes(pronoun)
@@ -68,8 +68,8 @@ class MarisaDict:
     def get_from_pronoun(self, pronoun):
         ret = []
         for word in self._dict_get(pronoun):
-            w = self._get_unigram_weight(word)
-            ret.append((word, w))
+            #w = self._get_unigram_weight(word)
+            ret.append((word, 0))
         return ret
 
     def get_unknownword_weight(self, unknown):

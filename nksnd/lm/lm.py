@@ -41,7 +41,7 @@ def pronounciation(sentence):
 class LM:
 
     def __init__(self):
-        self.collocationLM = collocation_lm.CollocationLM()
+        pass
 
     def train(self, file_names):
         print("Counting words...")
@@ -65,11 +65,11 @@ class LM:
 
         if learn_config.learn_collocation:
             print("Learning collocations...")
+            self.collocationLM = collocation_lm.CollocationLM(self.dict)
             files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
             lines = concat(files)
             sentences = (line.split(' ') for line in lines)
-            words_seq = ([words.replace_word(self.known_words, word) for word in sentence] for sentence in sentences)
-            self.collocationLM.train(words_seq)
+            self.collocationLM.train(sentences)
             map(lambda f: f.close(), files)
         print("training end.")
 
@@ -88,22 +88,23 @@ class LM:
         return sorted(paths, key=lambda path: self.score(path), reverse=True)[0]
 
     def save(self, path):
-        if learn_config.learn_collocation:
-            print("Saving the collocation language model...", file=sys.stderr)
-            self.collocationLM.save(path)
 
         print("Saving the language model...", file=sys.stderr)
         marisa_known_words = marisa_trie.Trie(self.known_words)
         marisa_known_words.save(os.path.join(path, 'known_words'))
         self.dict.save(path)
+        if learn_config.learn_collocation:
+            print("Saving the collocation language model...", file=sys.stderr)
+            self.collocationLM.save(path)
         print("end.", file=sys.stderr)
 
 
     def load(self, path):
-        print("loading collocation paramaters...", file=sys.stderr)
-        self.collocationLM.load(path)
         print("loading the language model...", file=sys.stderr)
         self.dict = marisa_dict.MarisaDict()
         self.dict.mmap(path)
         self.known_words = marisa_trie.Trie().mmap(os.path.join(path, 'known_words'))
+        print("loading collocation paramaters...", file=sys.stderr)
+        self.collocationLM = collocation_lm.CollocationLM(self.dict)
+        self.collocationLM.load(path)
         print("end.", file=sys.stderr)
