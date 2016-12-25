@@ -1,6 +1,7 @@
 from utils import genmaxent, words
 import os
 import math
+import marisa_trie
 
 def features(context, outcome):
     length = len(context)
