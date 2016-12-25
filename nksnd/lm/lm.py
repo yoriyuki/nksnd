@@ -56,12 +56,11 @@ class LM:
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        sentences = ([words.replace_word(self.known_words, word) for word in sentence] for sentence in sentences)
         slm = stats.SLM()
         slm.fit(sentences)
         unigram_freq, next_types, bigram_freq = slm.output()
         self.dict = marisa_dict.MarisaDict()
-        self.dict.populate(self.known_words, unigram_freq, next_types, bigram_freq)
+        self.dict.populate(unigram_freq, next_types, bigram_freq)
         map(lambda f: f.close(), files)
 
         if learn_config.learn_collocation:
@@ -75,7 +74,7 @@ class LM:
         print("training end.")
 
     def score(self, path):
-        deep_words = [node.deep for node in path]
+        deep_words = [words.replace_word(self.known_words, node.deep) for node in path]
         return self.collocationLM.score(deep_words)
 
     def n_candidates(self, pronoun, n):
@@ -94,6 +93,8 @@ class LM:
             self.collocationLM.save(path)
 
         print("Saving the language model...", file=sys.stderr)
+        marisa_known_words = marisa_trie.Trie(self.known_words)
+        marisa_known_words.save(os.path.join(path, 'known_words'))
         self.dict.save(path)
         print("end.", file=sys.stderr)
 
@@ -104,4 +105,5 @@ class LM:
         print("loading the language model...", file=sys.stderr)
         self.dict = marisa_dict.MarisaDict()
         self.dict.mmap(path)
+        self.known_words = marisa_trie.Trie().mmap(os.path.join(path, 'known_words'))
         print("end.", file=sys.stderr)
