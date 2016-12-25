@@ -46,7 +46,7 @@ if __name__ == "__main__":
                 orig.strip(' \n')
                 conv.strip(' \n')
                 sentences += 1
-                if orig == conc:
+                if orig == conv:
                     correct_sentences += 1
                 lcs_len = lcs(orig, conv)
                 if args.verbose:
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             precision = lcs_sum/float(conv_sum)
             recall = lcs_sum/float(orig_sum)
             f_value = 2 * precision * recall / (precision + recall)
-            sentence_accuracy = float(correct_sentence) / sentences
+            sentence_accuracy = float(correct_sentences) / sentences
             if args.verbose:
                 print(u',,,{},{},{},{}'.format(precision, recall, f_value, sentence_accuracy), file=stdout)
             else:
