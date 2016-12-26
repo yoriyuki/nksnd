@@ -85,7 +85,7 @@ class LM:
 
     def convert(self, pronoun):
         paths = self.n_candidates(pronoun, conversion_config.candidates_num)
-        return sorted(paths, key=lambda path: self.score(path), reverse=True)[0]
+        return sorted(paths, key=lambda path: self.score(path))[-1]
 
     def save(self, path):
 
