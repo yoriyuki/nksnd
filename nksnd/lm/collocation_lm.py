@@ -42,13 +42,13 @@ class CollocationLM:
     def score(self, words):
         log_p = 0
         words =  [u'_BOS'] + words + [u'_EOS']
-        for i in range(1, len(words) + 1):
-            if self.known_outcomes(words[i]):
+        for i in range(1, len(words)):
+            if words[i] in self.known_outcomes:
                 fs = filter(lambda f: f in self.known_features, features(words[0:i-1], words[i]))
-                p = p + math.log(self._eval(fs, words[i]))
+                log_p = log_p + math.log(self._eval(fs, words[i]))
             else:
-                p = p + slm.get_bigram_weight(words[i-1], words[i])
-        return p
+                log_p = log_p + self.slm.get_bigram_weight(words[i-1], words[i])
+        return log_p
 
     def save(self, path):
         param_filename = os.path.join(path, 'collocation_param')
