@@ -43,7 +43,7 @@ class CollocationLM:
         log_p = 0
         words =  [u'_BOS'] + words + [u'_EOS']
         for i in range(1, len(words)):
-            if words[i] in self.known_outcomes:
+            if words[i] in self.known_outcomes and '1' + words[i-1] in self.known_features:
                 fs = [f for f in features(words[0:i]) if f in self.known_features]
                 log_p = log_p + math.log(self._eval(fs, words[i]))
             else:
