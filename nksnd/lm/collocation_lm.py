@@ -3,7 +3,7 @@ import os
 import math
 import marisa_trie
 
-def features(context, outcome):
+def features(context):
     length = len(context)
     if length > 2:
         collocations = [':' + word for word in context[0:length-3]]
@@ -27,7 +27,7 @@ class CollocationLM:
         for words in words_seq:
             words =  [u'_BOS'] + words + [u'_EOS']
             for i in range(len(words)):
-                fs = features(words[0:i-1], words[i])
+                fs = features(words[0:i])
                 map(lambda f: self.known_features.add(f), fs)
                 self.known_outcomes.add(words[i])
                 yield (fs, words[i])
@@ -44,7 +44,7 @@ class CollocationLM:
         words =  [u'_BOS'] + words + [u'_EOS']
         for i in range(1, len(words)):
             if words[i] in self.known_outcomes:
-                fs = filter(lambda f: f in self.known_features, features(words[0:i-1], words[i]))
+                fs = [f for f in features(words[0:i]) if f in self.known_features]
                 log_p = log_p + math.log(self._eval(fs, words[i]))
             else:
                 log_p = log_p + self.slm.get_bigram_weight(words[i-1], words[i])
