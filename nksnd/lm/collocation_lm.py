@@ -6,7 +6,7 @@ import marisa_trie
 def features(context):
     length = len(context)
     if length > 2:
-        collocations = [':' + word for word in context[0:length-3]]
+        collocations = [':' + word for word in context[0:length-2]]
         return collocations + ['2' + context[-2], '1' + context[-1]]
     elif length == 2:
         return ['2' + context[0], '1' + context[1]]
