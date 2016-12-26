@@ -74,7 +74,7 @@ class LM:
         print("training end.")
 
     def score(self, path):
-        deep_words = [words.replace_word(self.known_words, node.deep) for node in path]
+        deep_words = [node.deep for node in path]
         return self.collocationLM.score(deep_words)
 
     def n_candidates(self, pronoun, n):
