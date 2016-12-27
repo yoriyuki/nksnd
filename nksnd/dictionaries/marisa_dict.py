@@ -51,7 +51,7 @@ class MarisaDict:
         else:
             return 0
 
-    def _escape(self, word):
+    def escape(self, word):
         if word in self._unigram_stat:
             n, t = self._get_unigram_stat(word)
             return slm_config.max_escape_rate * float(t) / n
@@ -77,7 +77,7 @@ class MarisaDict:
 
     def get_bigram_weight(self, word1, word2):
         word1_n, word1_t = self._get_unigram_stat(word1)
-        escape = self._escape(word1)
+        escape = self.escape(word1)
         n = self._get_bigram_freq(word1, word2)
         if n == 0:
             return self._get_unigram_weight(word2) + math.log(escape)

@@ -83,9 +83,10 @@ class LM:
         paths = viterbi.backward_a_star(self.dict, gr, n)
         return paths
 
-    def convert(self, pronoun):
+    def convert(self, pronoun, n):
         paths = self.n_candidates(pronoun, conversion_config.candidates_num)
-        return sorted(paths, key=lambda path: - self.score(path))[0]
+        path_and_scores = [(path, self.score(path)) for path in paths]
+        return sorted(path_and_scores, key=lambda (p, s): -s)[0:n]
 
     def save(self, path):
 
