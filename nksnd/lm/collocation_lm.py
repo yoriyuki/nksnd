@@ -61,5 +61,5 @@ class CollocationLM:
     def load(self, path):
         param_filename = os.path.join(path, 'collocation_param')
         self._model.load(param_filename)
-        self.known_featuress = marisa_trie.Trie().mmap(os.path.join(path, 'known_features'))
+        self.known_features = marisa_trie.Trie().mmap(os.path.join(path, 'known_features'))
         self.known_outcomes = marisa_trie.Trie().mmap(os.path.join(path, 'known_outcomes'))

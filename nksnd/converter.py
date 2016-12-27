@@ -1,5 +1,5 @@
 from __future__ import print_function
-from config import conversion_config
+from config import conversion_config, slm_config
 from lm import lm
 import sys
 import codecs
@@ -17,8 +17,17 @@ if __name__ == "__main__":
         default=1, type=int,
         help='number of candidates for reranking')
     parser.add_argument('-d', default=False, type=bool, help='debug mode')
+    parser.add_argument('--max_escape_rate', type=float,
+        default = slm_config.max_escape_rate,
+        help='Maximal escape rate')
+    parser.add_argument('--additive_smoothing', type=float,
+        default = slm_config.additive_smoothing,
+        help='Smoothing constant for additive smoothing')
+
     args = parser.parse_args()
     conversion_config.candidates_num = args.n
+    slm_config.max_escape_rate = args.max_escape_rate
+    slm_config.additive_smoothing = args.additive_smoothing
 
     for line in stdin:
         line = line.strip('\n')
