@@ -2,7 +2,7 @@
 
 experiment () {
   python converter.py -n $1 < ../../corpus/10.kkci > ../output/output-$1.txt
-  echo $1, `python evaluate.py ../../corpus/10.word ../output/output-$1.txt`
+  echo $1, `python evaluate.py ../../corpus/10.sent ../output/output-$1.txt`
 };
 export -f experiment
 

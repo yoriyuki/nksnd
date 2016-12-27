@@ -22,14 +22,12 @@ if __name__ == "__main__":
 
     for line in stdin:
         line = line.strip('\n')
-        path = lm.convert(line)
         if args.d:
-            viterbis = lm.n_candidates(line, args.n)
-            for viterbi in viterbis:
-                output = u' '.join(['(' + node.deep + "," + unicode(node.weight) + ')' for node in viterbi])
-                print(output, file=stdout)
-            output = u' '.join(['(' + node.deep + "," + unicode(node.weight) + ')' for node in path])
-            print(output, file=stdout)
+            path_and_scores = lm.convert(line, args.n)
+            for path, score in path_and_scores:
+                output = u''.join([node.surface for node in path])
+                print(output, score, file=stdout)
         else:
+            path, score = lm.convert(line, args.n)[0]
             output = u''.join([node.surface for node in path])
             print(output, file=stdout)

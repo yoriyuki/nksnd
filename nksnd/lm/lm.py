@@ -6,10 +6,10 @@ import os
 import sys
 import marisa_trie
 from utils import words
-from config import lmconfig, conversion_config
-from crf import parameter_estimater
+from config import lmconfig, conversion_config, learn_config
 from dictionaries import marisa_dict
 from graph import graph, viterbi
+from slm import stats
 
 def concat(files):
     for file in files:
@@ -41,7 +41,7 @@ def pronounciation(sentence):
 class LM:
 
     def __init__(self):
-        self.collocationLM = collocation_lm.CollocationLM()
+        pass
 
     def train(self, file_names):
         print("Counting words...")
@@ -52,23 +52,26 @@ class LM:
         self.known_words = cut_off_set(counts, lmconfig.unknownword_threshold)
         map(lambda f: f.close(), files)
 
-        print("Training the CRF model...")
+        print("Building statistical model...")
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        data = ((pronounciation(s), s) for s in sentences)
-        crf_estimater = parameter_estimater.CRFEsitimater(self.known_words)
-        crf_estimater.fit(data, lines_num)
-        self.dict = crf_estimater.dict
+        slm = stats.SLM()
+        slm.fit(sentences)
+        unigram_freq, next_types, bigram_freq = slm.output()
+        self.dict = marisa_dict.MarisaDict()
+        self.dict.populate(unigram_freq, next_types, bigram_freq)
         map(lambda f: f.close(), files)
 
-        print("Learning collocations...")
-        files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
-        lines = concat(files)
-        sentences = (line.split(' ') for line in lines)
-        words_seq = ([words.replace_word(self.known_words, word) for word in sentence] for sentence in sentences)
-        self.collocationLM.train(words_seq)
-        map(lambda f: f.close(), files)
+        if learn_config.learn_collocation:
+            print("Learning collocations...")
+            self.collocationLM = collocation_lm.CollocationLM(self.dict)
+            files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
+            lines = concat(files)
+            sentences = (line.split(' ') for line in lines)
+            self.collocationLM.train(sentences)
+            map(lambda f: f.close(), files)
+        print("training end.")
 
     def score(self, path):
         deep_words = [node.deep for node in path]
@@ -80,20 +83,29 @@ class LM:
         paths = viterbi.backward_a_star(self.dict, gr, n)
         return paths
 
-    def convert(self, pronoun):
+    def convert(self, pronoun, n):
         paths = self.n_candidates(pronoun, conversion_config.candidates_num)
-        return sorted(paths, key=lambda path: self.score(path), reverse=True)[0]
+        path_and_scores = [(path, self.score(path)) for path in paths]
+        return sorted(path_and_scores, key=lambda (p, s): -s)[0:n]
 
     def save(self, path):
-        print("Saving the collocation language model...", file=sys.stderr)
-        self.collocationLM.save(path)
 
-        print("Saving the CRF model...", file=sys.stderr)
+        print("Saving the language model...", file=sys.stderr)
+        marisa_known_words = marisa_trie.Trie(self.known_words)
+        marisa_known_words.save(os.path.join(path, 'known_words'))
         self.dict.save(path)
+        if learn_config.learn_collocation:
+            print("Saving the collocation language model...", file=sys.stderr)
+            self.collocationLM.save(path)
+        print("end.", file=sys.stderr)
+
 
     def load(self, path):
-        print("loading collocation paramaters...", file=sys.stderr)
-        self.collocationLM.load(path)
-        print("loading the CRF model...", file=sys.stderr)
+        print("loading the language model...", file=sys.stderr)
         self.dict = marisa_dict.MarisaDict()
         self.dict.mmap(path)
+        self.known_words = marisa_trie.Trie().mmap(os.path.join(path, 'known_words'))
+        print("loading collocation paramaters...", file=sys.stderr)
+        self.collocationLM = collocation_lm.CollocationLM(self.dict)
+        self.collocationLM.load(path)
+        print("end.", file=sys.stderr)
