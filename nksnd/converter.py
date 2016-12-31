@@ -34,7 +34,7 @@ if __name__ == "__main__":
         if args.d:
             path_and_scores = lm.convert(line, args.n)
             for path, score in path_and_scores:
-                output = u''.join([node.surface for node in path])
+                output = u' '.join([node.deep for node in path])
                 print(output, score, file=stdout)
         else:
             path, score = lm.convert(line, args.n)[0]
