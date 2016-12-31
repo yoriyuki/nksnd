@@ -1,7 +1,11 @@
+from __future__ import print_function
 from utils import genmaxent, words
 import os
 import math
 import marisa_trie
+import codecs
+import sys
+stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 def features(context):
     length = len(context)
@@ -39,13 +43,16 @@ class CollocationLM:
         data = self.gen_data(words_seq)
         self._model.train(data, cutoff=1)
 
-    def score(self, words):
+    def score(self, words, debug=False):
         log_p = 0
         words =  [u'_BOS'] + words + [u'_EOS']
         for i in range(1, len(words)):
-            if words[i] in self.known_outcomes and '1' + words[i-1] in self.known_features:
+            if words[i] in self.known_outcomes:
                 fs = [f for f in features(words[0:i]) if f in self.known_features]
-                log_p = log_p + math.log(self._eval(fs, words[i]))
+                score = self._eval(fs, words[i])
+                if debug:
+                    print(u','.join(fs), words[i], math.log(score), file=stdout)
+                log_p = log_p + math.log(score)
             else:
                 log_p = log_p + self.slm.get_bigram_weight(words[i-1], words[i])
         return log_p
