@@ -40,6 +40,7 @@ class CollocationLM:
         return self._model.eval(context, outcome)
 
     def train(self, words_seq):
+        words_seq = ([u'_BOS'] + words + [u'_EOS'] for words in words_seq)
         data = self.gen_data(words_seq)
         self._model.train(data, cutoff=1)
 
