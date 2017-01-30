@@ -10,5 +10,6 @@ lm = lm.LM()
 lm.load('../data/')
 
 for line in stdin:
+    line = line.rstrip('\n')
     sentence = line.split(' ')
-    print(line.rstrip('\n') + "," + str(lm.collocationLM.score(sentence, debug=True)), file=stdout)
+    print(line + "," + str(lm.collocationLM.score(sentence, debug=True)), file=stdout)

@@ -14,6 +14,8 @@ if __name__ == "__main__":
         help='iteration number of lbfgs optimization')
     parser.add_argument('--gaussian', type=float, default = lmconfig.gaussian,
         help='gaussian prior')
+    parser.add_argument('--tolerance', type=float, default = lmconfig.tolerance,
+        help='tolerance')
     parser.add_argument('--unknownword_threshold', type=int,
         default = lmconfig.unknownword_threshold,
         help='threshold which we consider a word in corpus as an unknownword')
@@ -37,6 +39,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     lmconfig.iteration = args.iter
     lmconfig.gaussian = args.gaussian
+    lmconfig.tolerance = args.tolerance
     lmconfig.unknownword_threshold = args.unknownword_threshold
     lmconfig.eta = args.crf_fobos_eta
     lmconfig.regularization_factor = args.crf_fobos_c
