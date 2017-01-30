@@ -13,10 +13,11 @@ ngramLM_sum = 0
 count = 0
 
 for line in stdin:
+    line = line.rstrip('\n')
     sentence = line.split(' ')
     col_score = lm.collocationLM.score(sentence, debug=False)
     slm_score = lm.slm_score(sentence)
-    print(line.rstrip('\n') + "," + str(col_score) + "," + str(slm_score), file=stdout)
+    print(line + "," + str(col_score) + "," + str(slm_score), file=stdout)
     collationLM_sum += col_score
     ngramLM_sum += slm_score
     count += 1

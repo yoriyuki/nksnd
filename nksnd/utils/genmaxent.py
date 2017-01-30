@@ -23,7 +23,7 @@ class GenMaxEntModel:
         self.__m.add_event(context, outcome)
 
     def __train(self):
-        self.__m.train(lmconfig.iteration, "lbfgs", lmconfig.gaussian)
+        self.__m.train(lmconfig.iteration, "lbfgs", lmconfig.gaussian, lmconfig.tolerance)
 
     def train(self, events, cutoff=1):
         self.__begin_add_event()

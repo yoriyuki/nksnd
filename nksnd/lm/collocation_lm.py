@@ -5,17 +5,16 @@ import math
 import marisa_trie
 import codecs
 import sys
+from itertools import chain
 stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 def features(context):
     length = len(context)
-    if length > 2:
-        collocations = [':' + word for word in context[0:length-2]]
-        return collocations + ['2' + context[-2], '1' + context[-1]]
-    elif length == 2:
-        return ['2' + context[0], '1' + context[1]]
+    if length > 1:
+        collocations = [':' + word for word in context[0:length-1]]
+        return collocations + ['1' +context[-1]]
     elif length == 1:
-        return ['1' + context[0]]
+        return ['1' + context[-1]]
     else:
         return []
 
@@ -42,6 +41,7 @@ class CollocationLM:
     def train(self, words_seq):
         words_seq = ([u'_BOS'] + words + [u'_EOS'] for words in words_seq)
         data = self.gen_data(words_seq)
+        data = chain([([], u'_unknown')], data)
         self._model.train(data, cutoff=1)
 
     def score(self, words, debug=False):
@@ -49,13 +49,14 @@ class CollocationLM:
         words =  [u'_BOS'] + words + [u'_EOS']
         for i in range(1, len(words)):
             if words[i] in self.known_outcomes:
-                fs = [f for f in features(words[0:i]) if f in self.known_features]
-                score = self._eval(fs, words[i])
-                if debug:
-                    print(u','.join(fs), words[i], math.log(score), file=stdout)
-                log_p = log_p + math.log(score)
+                outcome = words[i]
             else:
-                log_p = log_p + self.slm.get_bigram_weight(words[i-1], words[i])
+                outcome = u'_unknown'
+            fs = [f for f in features(words[0:i]) if f in self.known_features]
+            score = self._eval(fs, outcome)
+            if debug:
+                print(u','.join(fs), outcome, math.log(score), file=stdout)
+            log_p = log_p + math.log(score)
         return log_p
 
     def save(self, path):
