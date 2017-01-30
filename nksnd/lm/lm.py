@@ -77,6 +77,13 @@ class LM:
         deep_words = [node.deep for node in path]
         return self.collocationLM.score(deep_words)
 
+    def slm_score(self, words):
+        words = [u'_BOS'] + words + [u'_EOS']
+        score = 0
+        for i in range(len(words) - 1):
+            score += self.dict.get_bigram_weight(words[i], words[i+1])
+        return score
+
     def n_candidates(self, pronoun, n):
         gr = graph.Graph(self.dict, pronoun)
         viterbi.forward_dp(self.dict, gr)
