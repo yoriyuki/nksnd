@@ -43,6 +43,9 @@ class GenMaxEntModel:
         context, outcome = encode_event((context, outcome))
         return self.__m.eval(context, outcome)
 
+    def eval_all(self, context):
+        context = [feature.encode('utf-8') for feature in context]
+        return self.__m.eval_all(context)
 
 def _test():
     class Data:
