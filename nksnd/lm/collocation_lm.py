@@ -38,11 +38,20 @@ class CollocationLM:
     def _eval(self, context, outcome):
         return self._model.eval(context, outcome)
 
+    def _eval_all(self, context):
+        return self._model.eval_all(context)
+
     def train(self, words_seq):
         words_seq = ([u'_BOS'] + words + [u'_EOS'] for words in words_seq)
         data = self.gen_data(words_seq)
         data = chain([([], u'_unknown')], data)
         self._model.train(data, cutoff=1)
+
+    def predict(self, words, n):
+        words = [u'_BOS'] + words
+        fs = [f for f in features(words) if f in self.known_features]
+        prediction = self._eval_all(fs)[0:n]
+        return [(word.decode('utf-8'), self._eval(fs, word.decode('utf-8'))) for (word, p) in prediction]
 
     def score(self, words, debug=False):
         log_p = 0
