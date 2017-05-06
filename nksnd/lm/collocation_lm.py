@@ -12,11 +12,11 @@ def features(context):
     length = len(context)
     if length > 1:
         collocations = [':' + word for word in context[0:length-1]]
-        return collocations + ['1' +context[-1]]
+        return collocations + ['1' + context[-1]] + ['0']
     elif length == 1:
-        return ['1' + context[-1]]
+        return ['1' + context[-1]] + ['0']
     else:
-        return []
+        return ['0']
 
 class CollocationLM:
 
@@ -44,7 +44,7 @@ class CollocationLM:
     def train(self, words_seq):
         words_seq = ([u'_BOS'] + words + [u'_EOS'] for words in words_seq)
         data = self.gen_data(words_seq)
-        data = chain([([], u'_unknown')], data)
+        data = chain([(['0'], u'_unknown')], data)
         self._model.train(data, cutoff=1)
 
     def predict(self, words, n):
