@@ -12,7 +12,7 @@ lm.load('../data/')
 for line in stdin:
     line = line.rstrip('\n')
     words = line.split(' ')
-    prediction = lm.collocationLM.predict(words, 10)
+    prediction = lm.collocationLM.predict(words, -1)
     print(line, file=stdout)
     total_p = 0.0
     for word, p in prediction:
