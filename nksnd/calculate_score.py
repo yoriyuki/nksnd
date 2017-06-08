@@ -22,4 +22,4 @@ for line in stdin:
     ngramLM_sum += slm_score
     count += 1
 
-print(str(collationLM_sum / count) + "," + str(ngramLM_sum / count))
+print("cross_entropy, " + str(collationLM_sum / count) + "," + str(ngramLM_sum / count))
