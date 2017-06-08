@@ -12,11 +12,11 @@ def features(context):
     length = len(context)
     if length > 1:
         collocations = [':' + word for word in context[0:length-1]]
-        return collocations + ['1' + context[-1]] + ['0']
+        return collocations + ['1' + context[-1]] + [u'0']
     elif length == 1:
-        return ['1' + context[-1]] + ['0']
+        return ['1' + context[-1]] + [u'0']
     else:
-        return ['0']
+        return [u'0']
 
 class CollocationLM:
 
