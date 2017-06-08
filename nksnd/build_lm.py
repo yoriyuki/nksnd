@@ -18,13 +18,7 @@ if __name__ == "__main__":
         help='tolerance')
     parser.add_argument('--unknownword_threshold', type=int,
         default = lmconfig.unknownword_threshold,
-        help='threshold by which we consider a word in corpus as an unknownword')
-    parser.add_argument('--unknown_feature_threshold', type=int,
-        default = lmconfig.unknown_feature_threshold,
-        help='threshold by which we consider a feature in corpus as unknown')
-    parser.add_argument('--max_depth', type=int,
-        default = lmconfig.max_depth,
-        help='maximal depth by which we remember the location in the context')
+        help='threshold which we consider a word in corpus as an unknownword')
     parser.add_argument('--crf_fobos_eta', type=float,
         default = lmconfig.eta,
         help='learning rate of CRF fobos learning algorithm')
@@ -47,8 +41,6 @@ if __name__ == "__main__":
     lmconfig.gaussian = args.gaussian
     lmconfig.tolerance = args.tolerance
     lmconfig.unknownword_threshold = args.unknownword_threshold
-    lmconfig.unknown_feature_threshold = args.unknown_feature_threshold
-    lmconfig.max_depth = args.max_depth
     lmconfig.eta = args.crf_fobos_eta
     lmconfig.regularization_factor = args.crf_fobos_c
     parallel_config.processes = args.crf_processes

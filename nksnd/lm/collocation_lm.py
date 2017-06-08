@@ -6,38 +6,17 @@ import marisa_trie
 import codecs
 import sys
 from itertools import chain
-from config import lmconfig
 stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 def features(context):
-    fs = ['0']
-    for i in range(1, 1+lmconfig.max_depth):
-        fs += [str(i) + word for word in context[-i:]]
-    fs += [':' + word for word in context]
-    return fs
-
-def count_features(data):
-    feature_count = {}
-    for fs, outcome in data:
-        for f in fs:
-            if f in feature_count:
-                feature_count[f] = feature_count[f]+1
-            else:
-                feature_count[f] = 1
-    feature_set = {'0'}
-    for f, c in feature_count.iteritems():
-        if c > lmconfig.unknown_feature_threshold or f[0] == '1':
-            feature_set.add(f)
-    return feature_set
-
-def replace_features(feature_set, fs0):
-    fs = []
-    for f in fs0:
-        if f in feature_set:
-            fs.append(f)
-        else:
-            fs.append(f[0] + '_')
-    return fs
+    length = len(context)
+    if length > 1:
+        collocations = [':' + word for word in context[0:length-1]]
+        return collocations + ['1' + context[-1]] + ['0']
+    elif length == 1:
+        return ['1' + context[-1]] + ['0']
+    else:
+        return ['0']
 
 class CollocationLM:
 
@@ -52,6 +31,7 @@ class CollocationLM:
             words =  [u'_BOS'] + words + [u'_EOS']
             for i in range(len(words)):
                 fs = features(words[0:i])
+                map(lambda f: self.known_features.add(f), fs)
                 self.known_outcomes.add(words[i])
                 yield (fs, words[i])
 
@@ -64,15 +44,12 @@ class CollocationLM:
     def train(self, words_seq):
         words_seq = ([u'_BOS'] + words + [u'_EOS'] for words in words_seq)
         data = self.gen_data(words_seq)
-        unknown_fs = [str(i) + '_' for i in range(1, 1+lmconfig.max_depth)]
-        data = list(chain([(unknown_fs + [':_', '0'], u'_unknown')], data))
-        self.known_features = count_features(data)
-        data = [(replace_features(self.known_features, fs), outcome) for (fs, outcome) in data]
+        data = chain([(['0'], u'_unknown')], data)
         self._model.train(data, cutoff=1)
 
     def predict(self, words, n):
         words = [u'_BOS'] + words
-        fs = replace_features(self.known_features, features(words))
+        fs = [f for f in features(words) if f in self.known_features]
         prediction = self._eval_all(fs)[0:n]
         return [(word.decode('utf-8'), self._eval(fs, word.decode('utf-8'))) for (word, p) in prediction]
 
@@ -84,7 +61,7 @@ class CollocationLM:
                 outcome = words[i]
             else:
                 outcome = u'_unknown'
-            fs = replace_features(self.known_features, features(words))
+            fs = [f for f in features(words[0:i]) if f in self.known_features]
             score = self._eval(fs, outcome)
             if debug:
                 print(u','.join(fs), outcome, math.log(score), file=stdout)
