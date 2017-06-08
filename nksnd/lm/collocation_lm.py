@@ -33,7 +33,7 @@ def count_features(data):
 def replace_features(feature_set, fs0):
     fs = []
     for f in fs0:
-        if unicode(f) in feature_set:
+        if f in feature_set:
             fs.append(f)
         else:
             fs.append(f[0] + '_')
