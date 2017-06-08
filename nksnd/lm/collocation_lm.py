@@ -65,7 +65,7 @@ class CollocationLM:
         words_seq = ([u'_BOS'] + words + [u'_EOS'] for words in words_seq)
         data = self.gen_data(words_seq)
         unknown_fs = [str(i) + '_' for i in range(1, 1+lmconfig.max_depth)]
-        data = list(chain([(unknown_fs + [':_'], u'_never'), ('0', u'_unknown')], data))
+        data = list(chain([(unknown_fs + [':_', '0'], u'_unknown')], data))
         self.known_features = count_features(data)
         data = [(replace_features(self.known_features, fs), outcome) for (fs, outcome) in data]
         self._model.train(data, cutoff=1)
