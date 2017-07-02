@@ -43,33 +43,32 @@ class SLM:
         self.dict.mmap(path)
 
     def escape(self, word):
-        if word in self._unigram_stat:
-            n, t = self._get_unigram_stat(word)
-            return slm_config.max_escape_rate * float(t) / n
-        else:
+        n, t = self.dict.get_unigram_stat(word)
+        if n == 0:
             return slm_config.max_escape_rate
+        else:
+            return slm_config.max_escape_rate * float(t) / n
 
     def get_unigram_weight(self, word):
-        n, t = self._get_unigram_stat(word)
-        return math.log((n + slm_config.additive_smoothing) / (self.word_count + slm_config.additive_smoothing))
+        n, t = self.dict.get_unigram_stat(word)
+        return math.log((n + slm_config.additive_smoothing) / (self.dict.word_count + slm_config.additive_smoothing))
 
     def pronoun_prefixes(self, pronoun):
-        return self._dict.prefixes(pronoun)
+        return self.dict.pronoun_prefixes(pronoun)
 
     def get_from_pronoun(self, pronoun):
         ret = []
         for word in self._dict_get(pronoun):
-            #w = self._get_unigram_weight(word)
-            ret.append((word, 0))
+            ret.append(word)
         return ret
 
     def get_unknownword_weight(self, unknown):
-        return self._get_unigram_weight(unknown)
+        return self.get_unigram_weight(unknown)
 
     def get_bigram_weight(self, word1, word2):
         word1_n, word1_t = self._get_unigram_stat(word1)
         escape = self.escape(word1)
-        n = self._get_bigram_freq(word1, word2)
+        n = self.dict.get_bigram_freq(word1, word2)
         if n == 0:
             return self._get_unigram_weight(word2) + math.log(escape)
         else:

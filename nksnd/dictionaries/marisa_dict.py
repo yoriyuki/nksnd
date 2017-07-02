@@ -18,7 +18,7 @@ class MarisaDict:
     def populate(self, unigram_freq, next_types, bigram_freq):
         vocaburary = (key for key in unigram_freq.iterkeys() if words.is_word(key))
         dictionary_items = ((words.surface_pronoun(word)[1], word.encode('utf-8')) for word in vocaburary)
-        self._dict = marisa_trie.BytesTrie(dictionary_items)
+        self.dict = marisa_trie.BytesTrie(dictionary_items)
 
         word_list = []
         self.word_count = 0
@@ -37,6 +37,9 @@ class MarisaDict:
 
     def _dict_get(self, pronoun):
         return [word.decode('utf-8') for word in self._dict[pronoun]]
+
+    def pronoun_prefixes(self, pronoun):
+        return self._dict.prefixes(pronoun)
 
     def get_unigram_stat(self, word):
         if word in self._unigram_stat:

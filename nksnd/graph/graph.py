@@ -28,9 +28,9 @@ class Graph:
             sub = string[i:]
             prefixes = d.pronoun_prefixes(sub)
             for p in prefixes:
-                for word, weight in d.get_from_pronoun(p):
+                for word  in d.get_from_pronoun(p):
                     s, p = words.surface_pronoun(word)
-                    n = Node(i, p, s, word, weight)
+                    n = Node(i, p, s, word, 0)
                     self.nodes_list[i+len(p)].append(n)
 
             if prefixes == []:
