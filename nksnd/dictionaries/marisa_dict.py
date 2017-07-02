@@ -38,51 +38,18 @@ class MarisaDict:
     def _dict_get(self, pronoun):
         return [word.decode('utf-8') for word in self._dict[pronoun]]
 
-    def _get_unigram_stat(self, word):
+    def get_unigram_stat(self, word):
         if word in self._unigram_stat:
             return self._unigram_stat[word][0]
         else:
             return (0, 0)
 
-    def _get_bigram_freq(self, word1, word2):
+    def get_bigram_freq(self, word1, word2):
         k = words.compose_bigram_key(word1, word2)
         if k in self._bigram_stat:
             return _decode_num(self._bigram_stat[k])
         else:
             return 0
-
-    def escape(self, word):
-        if word in self._unigram_stat:
-            n, t = self._get_unigram_stat(word)
-            return slm_config.max_escape_rate * float(t) / n
-        else:
-            return slm_config.max_escape_rate
-
-    def _get_unigram_weight(self, word):
-        n, t = self._get_unigram_stat(word)
-        return math.log((n + slm_config.additive_smoothing) / (self.word_count + slm_config.additive_smoothing))
-
-    def pronoun_prefixes(self, pronoun):
-        return self._dict.prefixes(pronoun)
-
-    def get_from_pronoun(self, pronoun):
-        ret = []
-        for word in self._dict_get(pronoun):
-            #w = self._get_unigram_weight(word)
-            ret.append((word, 0))
-        return ret
-
-    def get_unknownword_weight(self, unknown):
-        return self._get_unigram_weight(unknown)
-
-    def get_bigram_weight(self, word1, word2):
-        word1_n, word1_t = self._get_unigram_stat(word1)
-        escape = self.escape(word1)
-        n = self._get_bigram_freq(word1, word2)
-        if n == 0:
-            return self._get_unigram_weight(word2) + math.log(escape)
-        else:
-            return math.log(float(n) / word1_n * (1 - escape))
 
     def save(self, path):
         dict_filename = os.path.join(path, 'dictionary')

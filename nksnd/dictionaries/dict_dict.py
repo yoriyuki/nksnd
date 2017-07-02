@@ -11,34 +11,11 @@ class DictDict(dictionary.Dictionary):
         self._weight = {}
         self._updated_count = {}
         self._count = 0
-        dictionary_items = ((words.surface_pronoun(word)[1], word.encode('utf-8')) for word in known_words) 
+        dictionary_items = ((words.surface_pronoun(word)[1], word.encode('utf-8')) for word in known_words)
         self._dict = marisa_trie.BytesTrie(dictionary_items)
 
     def _decode_weight(self, f):
         return f
-
-    def fobos_update(self, g):
-        self._count += 1
-        for key in g.dict.keys():
-            w = self._get_weight(key) + lmconfig.eta * g.get(key)
-            if key in self._updated_count:
-                d = self._updated_count[key]
-            else:
-                d = 0
-            w = numerics.clip(w, lmconfig.regularization_factor * (self._count - d))
-            if w == 0 and key in self._weight:
-                del(self._weight[key])
-            else:
-                self._weight[key] = w
-            self._updated_count[key] = self._count
-
-    def fobos_regularize(self):
-        for key in self._weight.keys():
-            w = numerics.clip(self._weight[key], lmconfig.regularization_factor * (self._count - self._updated_count[key]))
-            if w == 0 and key in self._weight:
-                del(self._weight[key])
-            else:
-                self._weight[key] = w
 
     def save(self, path):
         dict_filename = os.path.join(path, 'dictionary')
