@@ -70,6 +70,6 @@ class SLM:
         escape = self.escape(word1)
         n = self.dict.get_bigram_freq(word1, word2)
         if n == 0:
-            return self._get_unigram_weight(word2) + math.log(escape)
+            return self.get_unigram_weight(word2) + math.log(escape)
         else:
             return math.log(float(n) / word1_n * (1 - escape))

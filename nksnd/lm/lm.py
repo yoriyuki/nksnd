@@ -9,7 +9,7 @@ from utils import words
 from config import lmconfig, conversion_config, learn_config
 from dictionaries import marisa_dict
 from graph import graph, viterbi
-from slm import stats
+from slm import slm
 
 def concat(files):
     for file in files:
@@ -56,63 +56,40 @@ class LM:
         files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
         lines = concat(files)
         sentences = (line.split(' ') for line in lines)
-        slm = stats.SLM()
-        slm.fit(sentences)
-        unigram_freq, next_types, bigram_freq = slm.output()
-        self.dict = marisa_dict.MarisaDict()
-        self.dict.populate(unigram_freq, next_types, bigram_freq)
+        self.slm = slm.SLM()
+        self.slm.fit(sentences)
         map(lambda f: f.close(), files)
 
-        if learn_config.learn_collocation:
-            print("Learning collocations...")
-            self.collocationLM = collocation_lm.CollocationLM(self.dict)
-            files = [codecs.open(fname, encoding='utf-8') for fname in file_names]
-            lines = concat(files)
-            sentences = (line.split(' ') for line in lines)
-            self.collocationLM.train(sentences)
-            map(lambda f: f.close(), files)
         print("training end.")
 
-    def score(self, path):
-        deep_words = [node.deep for node in path]
-        return self.collocationLM.score(deep_words)
-
-    def slm_score(self, words):
+    def score(self, words):
         words = [u'_BOS'] + words + [u'_EOS']
         score = 0
         for i in range(len(words) - 1):
-            score += self.dict.get_bigram_weight(words[i], words[i+1])
+            score += self.slm.get_bigram_weight(words[i], words[i+1])
         return score
 
     def n_candidates(self, pronoun, n):
-        gr = graph.Graph(self.dict, pronoun)
-        viterbi.forward_dp(self.dict, gr)
-        paths = viterbi.backward_a_star(self.dict, gr, n)
+        gr = graph.Graph(self.slm, pronoun)
+        viterbi.forward_dp(self.slm, gr)
+        paths = viterbi.backward_a_star(self.slm, gr, n)
         return paths
 
     def convert(self, pronoun, n):
-        paths = self.n_candidates(pronoun, conversion_config.candidates_num)
-        path_and_scores = [(path, self.score(path)) for path in paths]
-        return sorted(path_and_scores, key=lambda k: -k[1])[0:n]
+        return paths = self.n_candidates(pronoun, 1)
 
     def save(self, path):
 
         print("Saving the language model...", file=sys.stderr)
         marisa_known_words = marisa_trie.Trie(self.known_words)
         marisa_known_words.save(os.path.join(path, 'known_words'))
-        self.dict.save(path)
-        if learn_config.learn_collocation:
-            print("Saving the collocation language model...", file=sys.stderr)
-            self.collocationLM.save(path)
+        self.slm.save(path)
         print("end.", file=sys.stderr)
 
 
     def load(self, path):
         print("loading the language model...", file=sys.stderr)
-        self.dict = marisa_dict.MarisaDict()
-        self.dict.mmap(path)
+        self.slm = slm.SLM()
+        self.slm.mmap(path)
         self.known_words = marisa_trie.Trie().mmap(os.path.join(path, 'known_words'))
-        print("loading collocation paramaters...", file=sys.stderr)
-        self.collocationLM = collocation_lm.CollocationLM(self.dict)
-        self.collocationLM.load(path)
         print("end.", file=sys.stderr)
