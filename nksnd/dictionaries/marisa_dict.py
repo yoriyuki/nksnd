@@ -35,11 +35,11 @@ class MarisaDict:
         bytesitems = ((key, struct.pack('<I', freq)) for key, freq in bigram_freq.items())
         self._bigram_stat = marisa_trie.BytesTrie(bytesitems)
 
-    def _dict_get(self, pronoun):
-        return [word.decode('utf-8') for word in self._dict[pronoun]]
+    def dict_get(self, pronoun):
+        return [word.decode('utf-8') for word in self.dict[pronoun]]
 
     def pronoun_prefixes(self, pronoun):
-        return self._dict.prefixes(pronoun)
+        return self.dict.prefixes(pronoun)
 
     def get_unigram_stat(self, word):
         if word in self._unigram_stat:

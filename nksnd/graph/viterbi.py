@@ -1,5 +1,6 @@
 from __future__ import print_function
 import heapq
+import itertools
 import copy
 import codecs, sys
 stdout = codecs.getwriter('utf-8')(sys.stdout)
@@ -23,12 +24,13 @@ def forward_dp(dictionary, graph):
 def backward_a_star(dictionary, graph, n):
     result = []
     pq = []
+    counter = itertools.count()
     eos = graph.nodes_list[graph.x_length + 1][0]
     eos.g = 0
-    heapq.heappush(pq, (0, eos))
+    heapq.heappush(pq, (0, next(counter), eos))
 
     while pq != [] and len(result) < n:
-        cost, front = heapq.heappop(pq)
+        cost, count, front = heapq.heappop(pq)
         if front.start_pos == -1:
             result.append(front)
         else:
@@ -38,7 +40,7 @@ def backward_a_star(dictionary, graph, n):
                 new_front = copy.copy(prev_node)
     #            print(new_front.surface, new_front.g, new_front.f, file=stdout)
                 new_front.next = front
-                heapq.heappush(pq, (- prev_node.f - prev_node.g, new_front))
+                heapq.heappush(pq, (- prev_node.f - prev_node.g, next(counter), new_front))
 
     n_best = []
     for node in result:

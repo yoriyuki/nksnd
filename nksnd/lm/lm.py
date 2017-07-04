@@ -74,8 +74,8 @@ class LM:
         paths = viterbi.backward_a_star(self.slm, gr, n)
         return paths
 
-    def convert(self, pronoun, n):
-        return self.n_candidates(pronoun, 1)
+    def convert(self, pronoun):
+        return self.n_candidates(pronoun, 1)[0]
 
     def save(self, path):
 

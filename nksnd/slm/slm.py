@@ -1,5 +1,7 @@
+import math
 from utils import words
 from dictionaries import marisa_dict
+from config import slm_config
 
 class SLM:
     def __init__(self):
@@ -58,7 +60,7 @@ class SLM:
 
     def get_from_pronoun(self, pronoun):
         ret = []
-        for word in self._dict_get(pronoun):
+        for word in self.dict.dict_get(pronoun):
             ret.append(word)
         return ret
 
@@ -66,7 +68,7 @@ class SLM:
         return self.get_unigram_weight(unknown)
 
     def get_bigram_weight(self, word1, word2):
-        word1_n, word1_t = self._get_unigram_stat(word1)
+        word1_n, word1_t = self.dict.get_unigram_stat(word1)
         escape = self.escape(word1)
         n = self.dict.get_bigram_freq(word1, word2)
         if n == 0:
