@@ -1,5 +1,5 @@
 from lm import lm
-from config import lmconfig, parallel_config, learn_config, slm_config
+from config import lmconfig, slm_config
 import argparse
 import os
 

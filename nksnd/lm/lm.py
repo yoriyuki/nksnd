@@ -1,15 +1,14 @@
 from __future__ import print_function
-import collocation_lm
 import codecs
 import pickle
 import os
 import sys
 import marisa_trie
 from utils import words
-from config import lmconfig, conversion_config, learn_config
 from dictionaries import marisa_dict
 from graph import graph, viterbi
 from slm import slm
+from config import lmconfig, slm_config
 
 def concat(files):
     for file in files:
@@ -76,7 +75,7 @@ class LM:
         return paths
 
     def convert(self, pronoun, n):
-        return paths = self.n_candidates(pronoun, 1)
+        return self.n_candidates(pronoun, 1)
 
     def save(self, path):
 

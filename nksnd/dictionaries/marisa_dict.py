@@ -16,13 +16,13 @@ class MarisaDict:
         pass
 
     def populate(self, unigram_freq, next_types, bigram_freq):
-        vocaburary = (key for key in unigram_freq.iterkeys() if words.is_word(key))
+        vocaburary = (key for key in unigram_freq.keys() if words.is_word(key))
         dictionary_items = ((words.surface_pronoun(word)[1], word.encode('utf-8')) for word in vocaburary)
         self.dict = marisa_trie.BytesTrie(dictionary_items)
 
         word_list = []
         self.word_count = 0
-        for word, freq in unigram_freq.iteritems():
+        for word, freq in unigram_freq.items():
             self.word_count += freq
             if word in next_types:
                 t = next_types[word]
@@ -32,7 +32,7 @@ class MarisaDict:
         self.vocaburaly_size = len(word_list)
         self._unigram_stat = marisa_trie.RecordTrie(unigram_fmt,word_list)
 
-        bytesitems = ((key, struct.pack('<I', freq)) for key, freq in bigram_freq.iteritems())
+        bytesitems = ((key, struct.pack('<I', freq)) for key, freq in bigram_freq.items())
         self._bigram_stat = marisa_trie.BytesTrie(bytesitems)
 
     def _dict_get(self, pronoun):
@@ -56,7 +56,7 @@ class MarisaDict:
 
     def save(self, path):
         dict_filename = os.path.join(path, 'dictionary')
-        self._dict.save(dict_filename)
+        self.dict.save(dict_filename)
         unigram_filename = os.path.join(path, 'unigram')
         self._unigram_stat.save(unigram_filename)
         bigram_filename = os.path.join(path, 'bigram')
@@ -66,8 +66,8 @@ class MarisaDict:
 
     def mmap(self, path):
         dict_filename = os.path.join(path, 'dictionary')
-        self._dict = marisa_trie.BytesTrie()
-        self._dict.mmap(dict_filename)
+        self.dict = marisa_trie.BytesTrie()
+        self.dict.mmap(dict_filename)
         unigram_filename = os.path.join(path, 'unigram')
         self._unigram_stat = marisa_trie.RecordTrie(unigram_fmt)
         self._unigram_stat.mmap(unigram_filename)

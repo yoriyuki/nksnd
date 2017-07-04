@@ -1,1 +1,1 @@
-__all__ = ['slm_config.py']
+__all__ = ['lmconfig.py', 'slm_config.py']

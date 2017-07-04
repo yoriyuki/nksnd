@@ -33,12 +33,12 @@ class SLM:
         for word in next_words:
             next_types[word] = len(next_words[word])
 
-        self.dict.populate(self.unigram_freq, next_types, self.bigram_freq)
+        self.dict.populate(unigram_freq, next_types, bigram_freq)
 
-    def save(path):
+    def save(self, path):
         self.dict.save(path)
 
-    def mmap(path):
+    def mmap(self, path):
         self.dict = marisa_dict.MarisaDict()
         self.dict.mmap(path)
 
