@@ -1,11 +1,13 @@
 from __future__ import print_function
-from config import slm_config
-from lm import lm
 import sys
 import codecs
 import argparse
 
 import sexpdata as sexp
+
+from utils import words
+from config import slm_config
+from lm import lm
 
 if __name__ == "__main__":
 
@@ -38,10 +40,12 @@ if __name__ == "__main__":
             cmd = sexp.loads(line)
             if cmd[0] == 'best-path':
                 path = lm.convert(cmd[1])
-                output = sexp.dumps(path)
+                words = [words.surface_pronoun(node.deep) for node in path]
+                output = sexp.dumps(words)
                 print(output, file=sys.stdout)
             elif cmd[0] == 'list-candidates':
-                candidates = lm.next_candidates(cmd[1], cmd[2], cmd[3])
+                words = [words.compose(t[0], t[1]) for t in cmd[1]]
+                candidates = lm.next_candidates(words, cmd[2], cmd[3])
                 output = sexp.dumps(candidates)
                 print(output, file=sys.stdout)
             else:

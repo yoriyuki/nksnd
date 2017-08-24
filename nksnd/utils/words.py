@@ -19,6 +19,9 @@ def is_katakana(string):
             return False
     return True
 
+def compose(s, p):
+    return s + u'/' + p
+
 def surface_pronoun(word):
     a = word.split(u'/')
     if len(a) != 2:
