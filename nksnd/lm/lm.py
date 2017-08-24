@@ -77,6 +77,16 @@ class LM:
     def convert(self, pronoun):
         return self.n_candidates(pronoun, 1)[0]
 
+    def next_candidates(self, words, pronoun, num):
+        candidates = self.slm.get_from_pronoun(pronoun)
+        candidates_with_weight = [(word, self.slm.get_bigram_weight(words[-1], word)) for word in candidates]
+        sorted_tuples = sorted(candidates_with_weight, key=lambda t: - t[1])
+        sorted_candidates = map(lambda t: t[0], sorted_tuples)
+        if num > 0:
+            return sorted_candidates[:num]
+        else:
+            return sorted_candidates
+
     def save(self, path):
 
         print("Saving the language model...", file=sys.stderr)
