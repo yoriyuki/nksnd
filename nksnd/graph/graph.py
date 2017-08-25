@@ -1,4 +1,4 @@
-from utils import words
+from nksnd.utils import words
 
 class Node:
     def __init__(self, start_pos, key, surface, deep, weight):

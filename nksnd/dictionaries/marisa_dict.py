@@ -3,8 +3,8 @@ import marisa_trie
 import struct
 import os
 import json
-from utils import words
-from config import slm_config
+from nksnd.utils import words
+from nksnd.config import slm_config
 
 unigram_fmt="<II"
 

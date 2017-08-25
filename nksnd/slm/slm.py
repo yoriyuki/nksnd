@@ -1,7 +1,7 @@
 import math
-from utils import words
-from dictionaries import marisa_dict
-from config import slm_config
+from nksnd.utils import words
+from nksnd.dictionaries import marisa_dict
+from nksnd.config import slm_config
 
 class SLM:
     def __init__(self):

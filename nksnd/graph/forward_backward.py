@@ -1,4 +1,4 @@
-from utils import numerics
+from nksnd.utils import numerics
 
 def set_log_alpha(d, graph):
     for last_pos in range(2 + graph.x_length):

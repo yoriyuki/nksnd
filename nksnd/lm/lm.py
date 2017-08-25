@@ -4,11 +4,12 @@ import pickle
 import os
 import sys
 import marisa_trie
-from utils import words
-from dictionaries import marisa_dict
-from graph import graph, viterbi
-from slm import slm
-from config import lmconfig, slm_config
+
+from nksnd.utils import words
+from nksnd.dictionaries import marisa_dict
+from nksnd.graph import graph, viterbi
+from nksnd.slm import slm
+from nksnd.config import lmconfig, slm_config
 
 def concat(files):
     for file in files:

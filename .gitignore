@@ -1,4 +1,6 @@
 *.pyc
 *.pyo
-data/*
+nksnd/data/*
 output/*
+build
+nksnd.egg-info
