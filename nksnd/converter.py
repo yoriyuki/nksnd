@@ -5,7 +5,7 @@ import argparse
 
 import sexpdata as sexp
 
-from utils import words
+from utils import words as wd
 from config import slm_config
 from lm import lm
 
@@ -40,12 +40,13 @@ if __name__ == "__main__":
             cmd = sexp.loads(line)
             if cmd[0] == 'best-path':
                 path = lm.convert(cmd[1])
-                words = [words.surface_pronoun(node.deep) for node in path]
+                words = [wd.surface_pronoun(node.deep) for node in path]
                 output = sexp.dumps(words)
                 print(output, file=sys.stdout)
             elif cmd[0] == 'list-candidates':
-                words = [words.compose(t[0], t[1]) for t in cmd[1]]
+                words = [wd.compose(t[0], t[1]) for t in cmd[1]]
                 candidates = lm.next_candidates(words, cmd[2], cmd[3])
+                candidates = list(map(wd.surface_pronoun, candidates))
                 output = sexp.dumps(candidates)
                 print(output, file=sys.stdout)
             else:

@@ -79,9 +79,12 @@ class LM:
 
     def next_candidates(self, words, pronoun, num):
         candidates = self.slm.get_from_pronoun(pronoun)
-        candidates_with_weight = [(word, self.slm.get_bigram_weight(words[-1], word)) for word in candidates]
+        if len(words) > 0:
+            candidates_with_weight = [(word, self.slm.get_bigram_weight(words[-1], word)) for word in candidates]
+        else:
+            candidates_with_weight = [(word, self.slm.get_unigram_weight(word)) for word in candidates]
         sorted_tuples = sorted(candidates_with_weight, key=lambda t: - t[1])
-        sorted_candidates = map(lambda t: t[0], sorted_tuples)
+        sorted_candidates = list(map(lambda t: t[0], sorted_tuples))
         if num > 0:
             return sorted_candidates[:num]
         else:
@@ -95,10 +98,7 @@ class LM:
         self.slm.save(path)
         print("end.", file=sys.stderr)
 
-
     def load(self, path):
-        print("loading the language model...", file=sys.stderr)
         self.slm = slm.SLM()
         self.slm.mmap(path)
         self.known_words = marisa_trie.Trie().mmap(os.path.join(path, 'known_words'))
-        print("end.", file=sys.stderr)
