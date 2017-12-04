@@ -1,8 +1,6 @@
 from __future__ import print_function
 import sys
-import codecs
 import argparse
-stdout = codecs.getwriter('utf-8')(sys.stdout)
 import numpy as np
 
 def max3(x, y, z):
@@ -39,8 +37,8 @@ if __name__ == "__main__":
 
     with open(args.originals, 'r') as originals:
         with open(args.converted_texts, 'r') as converted_texts:
-            origs = codecs.getreader('utf-8')(originals)
-            convs = codecs.getreader('utf-8')(converted_texts)
+            origs = originals
+            convs = converted_texts
 
             for orig, conv in zip(origs, convs):
                 orig.strip(' \n')
@@ -60,6 +58,6 @@ if __name__ == "__main__":
             f_value = 2 * precision * recall / (precision + recall)
             sentence_accuracy = float(correct_sentences) / sentences
             if args.verbose:
-                print(u',,,{},{},{},{}'.format(precision, recall, f_value, sentence_accuracy), file=stdout)
+                print(u',,,{},{},{},{}'.format(precision, recall, f_value, sentence_accuracy), file=sys.stdout)
             else:
-                print(u'{},{},{},{}'.format(precision, recall, f_value, sentence_accuracy), file=stdout)
+                print(u'{},{},{},{}'.format(precision, recall, f_value, sentence_accuracy), file=sys.stdout)

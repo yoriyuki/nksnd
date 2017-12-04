@@ -13,7 +13,7 @@ from nksnd.lm import lm as langmodel
 def main():
 
         lm = langmodel.LM()
-        lm.load(pth.join(pth.dirname(__file__), 'data'))
+        lm.load(pth.join(pth.dirname(__file__), '../data'))
 
         parser = argparse.ArgumentParser(description='Convert kana')
         parser.add_argument('-d', default=False, type=bool, help='debug mode')
