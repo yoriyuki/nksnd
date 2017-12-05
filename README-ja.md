@@ -1,8 +1,10 @@
-# nksnd: Kana-kanji conversion engine
+# nksnd: オープンソースかな漢字変換
 
 Copyright (C) 2016, 2017: National Institute of Advanced Industrial Science and Technology (AIST)
 
-## Installation
+Pythonでフルスクラッチで書かれています。
+
+## インストール
 
 ```shell
 $ tar -xzvf nksnd-<version>.tar.gz
@@ -11,16 +13,18 @@ $ python setup.py build
 $ python setup.py install
 ```
 
-## Usage
+## 使い方
 
-the program called `nksndconv` is installed.
+`nksndconv`というコマンドがインストールされます。
 
-For one-line-per-sentence inputs
+平文による入出力
 ```shell
 $ nksndconv
+きょうはいいてんき
+今日はいい天気
 ```
 
-For S-expression API
+S式による入出力
 ```shell
 $ nksndconv -m sexp
 ("best-path" "きょうはいいてんき")
