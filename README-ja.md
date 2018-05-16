@@ -2,6 +2,10 @@
 
 Copyright (C) 2016, 2017: National Institute of Advanced Industrial Science and Technology (AIST)
 
+Copyright (C) 2016: Yoh Okuno
+
+BCCWJパーサーは奥野陽さんの[neural_ime](https://github.com/yohokuno/neural_ime/blob/master/LICENSE)に由来します。ライセンスは同じです。
+
 Pythonでフルスクラッチで書かれています。
 
 ## インストール
