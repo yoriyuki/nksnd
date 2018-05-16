@@ -1,8 +1,10 @@
 # nksnd: Kana-kanji conversion engine
 
 Copyright (C) 2016, 2017: National Institute of Advanced Industrial Science and Technology (AIST)
+
 Copyright (C) 2016: Yoh Okuno
-Partially based on [neural_ime](https://github.com/yohokuno/neural_ime/blob/master/LICENSE) by Yoh Okuno.
+
+Partially based on [neural_ime](https://github.com/yohokuno/neural_ime/blob/master/LICENSE) by Yoh Okuno licensed under the same license.
 
 ## Installation
 
